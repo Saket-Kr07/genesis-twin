@@ -1,7 +1,7 @@
 """Draws pictures of the model so you can check it and use them in the report.
 
 Run:  python demo_plot.py
-Creates: curves.png, organs_day6.png and fit.png in this folder.
+Creates: curves.png, organs_day6.png, fit.png and late_treatment.png in this folder.
 """
 import csv
 import json
@@ -11,24 +11,26 @@ matplotlib.use("Agg")  # draw to a file, no window needed
 import matplotlib.pyplot as plt
 
 from fitting import fit_pathogen
-from pathogen import ORGAN_IDS, list_pathogens, simulate_pathogen
+from pathogen import ORGAN_IDS, list_pathogens, load_band, simulate_pathogen, simulate_timeline
 
-# Picture 1: pathogen load over time, with three treatment strengths
+# Picture 1: smooth load curves with three treatment strengths, plus an uncertainty band
 fig, axes = plt.subplots(1, 3, figsize=(13, 3.6), sharey=True)
 for ax, item in zip(axes, list_pathogens()):
+    band = load_band(item["id"], 0.0)
+    ax.fill_between(band["times"], band["low"], band["high"], alpha=0.2, label="uncertainty band (no treatment)")
     for treatment, style in [(0.0, "-"), (0.5, "--"), (1.0, ":")]:
-        curve = simulate_pathogen(item["id"], 0, treatment)["curve"]
+        curve = simulate_pathogen(item["id"], 0, treatment)["curve_smooth"]
         ax.plot([p["day"] for p in curve], [p["load"] for p in curve], style,
                 linewidth=2, label="treatment %.0f%%" % (treatment * 100))
     ax.set_title(item["name"], fontsize=10)
     ax.set_xlabel("day")
     ax.grid(alpha=0.3)
 axes[0].set_ylabel("pathogen load (1 = untreated peak)")
-axes[0].legend()
+axes[0].legend(fontsize=7)
 fig.tight_layout()
 fig.savefig("curves.png", dpi=140)
 
-# Picture 2: organ health on day 6 for virus A, untreated vs treated
+# Picture 2: organ health on day 6 for the respiratory virus, untreated vs treated
 fig2, ax2 = plt.subplots(figsize=(8, 4))
 width = 0.4
 x = range(len(ORGAN_IDS))
@@ -60,7 +62,25 @@ ax3.grid(alpha=0.3)
 fig3.tight_layout()
 fig3.savefig("fit.png", dpi=140)
 
+# Picture 4: what starting treatment late does (respiratory virus, treatment 80%)
+fig4, (ax4, ax5) = plt.subplots(1, 2, figsize=(10, 3.6))
+for start in (0, 2, 4, 6):
+    tl = simulate_timeline("respiratory_virus", 0.8, start)
+    ax4.plot(tl["times"], tl["load"], linewidth=2, label="treatment starts day %d" % start)
+    ax5.plot(tl["times"], tl["scores"]["lungs"], linewidth=2)
+none = simulate_timeline("respiratory_virus", 0.0)
+ax4.plot(none["times"], none["load"], "k--", label="no treatment")
+ax5.plot(none["times"], none["scores"]["lungs"], "k--")
+ax4.set_title("pathogen load")
+ax5.set_title("lung health score")
+for a in (ax4, ax5):
+    a.set_xlabel("day")
+    a.grid(alpha=0.3)
+ax4.legend(fontsize=8)
+fig4.tight_layout()
+fig4.savefig("late_treatment.png", dpi=140)
+
 # What the backend receives (lungs only, to keep the print short)
 sample = simulate_pathogen("respiratory_virus", 6, 0.0)
 print(json.dumps({"load": sample["load"], "lungs": sample["organs"]["lungs"]}, indent=2))
-print("Saved curves.png, organs_day6.png and fit.png")
+print("Saved curves.png, organs_day6.png, fit.png and late_treatment.png")
