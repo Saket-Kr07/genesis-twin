@@ -6,13 +6,16 @@ What this file does
 2. Lets a treatment slider (0 to 1) weaken the pathogen.
 3. Turns the pathogen load into damage for each of the 12 organs,
    using a "tropism table" (which organs does this pathogen like to attack?).
-4. Returns everything in the exact JSON shape agreed in Section 9 of the plan.
+4. Returns everything in the shape agreed in backend/api-contract.md (Rakhi).
 
-The backend (Rakhi) only needs two functions:
-    list_pathogens()
-    simulate_pathogen(pathogen_id, day, treatment)
+Functions the backend (Rakhi) calls:
+    list_pathogens()                      -> GET /pathogens
+    simulate_pathogen(id, day, treatment) -> POST /pathogens/simulate (preset pathogens)
+    simulate_custom(parameters, target_organs, day, treatment)
+                                          -> POST /pathogens/simulate for an uploaded pathogen
+(fit_pathogen for CSV uploads lives in fitting.py)
 
-All parameter values are SAMPLE values for a demo. They are not real outbreak data.
+All parameter values are SAMPLE values for a demo, not real outbreak data.
 Research and education only, not medical advice.
 """
 from functools import lru_cache
@@ -22,7 +25,7 @@ from scipy.integrate import solve_ivp
 
 DAYS = 30  # we simulate day 0 to day 30
 
-# The 12 organ ids shared by the whole team (Section 9 of the plan).
+# The 12 organ ids shared by the whole team.
 ORGAN_IDS = [
     "brain", "heart", "lungs", "liver", "stomach", "intestines",
     "kidneys", "bladder", "pancreas", "spleen", "thyroid", "reproductive",
@@ -35,20 +38,21 @@ K_HEAL = 0.12
 
 # --------------------------------------------------------------------------
 # Presets. "tropism" says how strongly each organ is hit (0 = never, 1 = fully).
+# Ids match backend/api-contract.md.
 # --------------------------------------------------------------------------
 PRESETS = {
-    "virus_a": {
-        "name": "Sample virus A (respiratory)",
+    "respiratory_virus": {
+        "name": "Sample respiratory virus",
         "kind": "virus",
         "params": {"beta": 1.0, "prod": 15.0, "delta": 0.8, "clear": 1.0,
                    "kill": 1.0, "s": 0.5, "dF": 0.2, "V0": 3e-3, "max_effect": 0.9},
-        "tropism": {"brain": 0.15, "heart": 0.35, "lungs": 0.9, "liver": 0.15,
+        "tropism": {"brain": 0.15, "heart": 0.35, "lungs": 0.90, "liver": 0.15,
                     "stomach": 0.10, "intestines": 0.10, "kidneys": 0.20,
                     "bladder": 0.05, "pancreas": 0.05, "spleen": 0.30,
                     "thyroid": 0.05, "reproductive": 0.05},
     },
-    "virus_b": {
-        "name": "Sample virus B (gut)",
+    "gut_virus": {
+        "name": "Sample gut virus",
         "kind": "virus",
         "params": {"beta": 1.2, "prod": 15.0, "delta": 1.0, "clear": 1.2,
                    "kill": 1.5, "s": 0.6, "dF": 0.3, "V0": 3e-3, "max_effect": 0.9},
@@ -57,8 +61,8 @@ PRESETS = {
                     "bladder": 0.10, "pancreas": 0.30, "spleen": 0.25,
                     "thyroid": 0.05, "reproductive": 0.05},
     },
-    "bacterium_c": {
-        "name": "Sample bacterium C (blood)",
+    "bloodstream_bacterium": {
+        "name": "Sample bloodstream bacterium",
         "kind": "bacteria",
         "params": {"r": 1.0, "K": 1.0, "kill": 3.0, "s": 1.5, "dF": 0.02,
                    "B0": 1e-3, "max_effect": 1.5},
@@ -137,42 +141,80 @@ def _damage_for_organ(tropism_value, load_by_day):
 
 
 # --------------------------------------------------------------------------
-# Step 3: from damage to vitals (PLACEHOLDER formulas.
-# On Day 2 we agree one shared mapping with Ravneet, Part B.)
-# x is damage between 0 (healthy) and 1 (severe).
+# Step 3: from damage to vitals. Names follow backend/api-contract.md.
+# x = damage between 0 (healthy) and 1 (severe), load = pathogen load 0 to 1.
+# These formulas are PLACEHOLDERS: Day 2 we agree one shared mapping with Ravneet (Part B).
 # --------------------------------------------------------------------------
 VITALS = {
-    "brain": lambda x: {"Neuro-inflammation index": 0.1 + 0.8 * x, "Reaction score": 95 - 45 * x},
-    "heart": lambda x: {"Heart rate bpm": 70 + 35 * x, "Ejection fraction %": 60 - 18 * x},
-    "lungs": lambda x: {"Oxygen saturation %": 98 - 16 * x, "Breathing rate /min": 14 + 16 * x},
-    "liver": lambda x: {"ALT U/L": 25 + 140 * x, "Bilirubin mg/dL": 0.7 + 2.2 * x},
-    "stomach": lambda x: {"Acidity index": 1 + 1.5 * x, "Wall inflammation (0-10)": 10 * x},
-    "intestines": lambda x: {"Gut inflammation (0-10)": 10 * x, "Motility %": 100 - 45 * x},
-    "kidneys": lambda x: {"eGFR mL/min": 100 - 45 * x, "Creatinine mg/dL": 0.9 + 1.1 * x},
-    "bladder": lambda x: {"Capacity %": 100 - 10 * x, "Irritation (0-10)": 10 * x},
-    "pancreas": lambda x: {"Glucose mg/dL": 90 + 60 * x, "Lipase U/L": 40 + 120 * x},
-    "spleen": lambda x: {"White cell count 10^9/L": 7 + 6 * x, "Cytokine level pg/mL": 5 + 95 * x},
-    "thyroid": lambda x: {"TSH mIU/L": 2.0 + 1.5 * x, "Free T4 ng/dL": 1.2 - 0.4 * x},
-    "reproductive": lambda x: {"Hormone index": 100 - 20 * x, "Inflammation (0-10)": 10 * x},
+    "brain": lambda x, load: {"neuro_inflammation_index": 0.1 + 0.8 * x, "reaction_score": 95 - 45 * x},
+    "heart": lambda x, load: {"heart_rate": 70 + 35 * x,
+                              "blood_pressure": "%d/%d" % (round(120 + 25 * x), round(80 + 12 * x)),
+                              "ejection_fraction": 60 - 18 * x},
+    "lungs": lambda x, load: {"oxygen_saturation": 98 - 16 * x, "breathing_rate": 14 + 16 * x,
+                              "lung_capacity": 4.8 - 1.8 * x},
+    "liver": lambda x, load: {"alt": 25 + 140 * x, "ast": 22 + 120 * x, "bilirubin": 0.7 + 2.2 * x},
+    "stomach": lambda x, load: {"gut_inflammation": 10 * x},
+    "intestines": lambda x, load: {"gut_inflammation": 10 * x},
+    "pancreas": lambda x, load: {"gut_inflammation": 10 * x},
+    "kidneys": lambda x, load: {"egfr": 100 - 45 * x, "creatinine": 0.9 + 1.1 * x, "hydration": 100 - 20 * x},
+    "bladder": lambda x, load: {"hydration": 100 - 20 * x},
+    "thyroid": lambda x, load: {"glucose": 90 + 30 * x, "tsh": 2.0 + 1.5 * x, "cortisol": 12 + 8 * x},
+    "spleen": lambda x, load: {"white_cell_count": 7 + 6 * x, "cytokine_level": 5 + 95 * x,
+                               "pathogen_load": load},
+    "reproductive": lambda x, load: {"hormone_indicators": 100 - 20 * x},
 }
 
 
 def _round_vitals(vitals):
-    return {name: round(float(value), 1) for name, value in vitals.items()}
+    out = {}
+    for name, value in vitals.items():
+        if isinstance(value, str):
+            out[name] = value
+        else:
+            value = float(value)
+            out[name] = round(value, 2) if abs(value) < 20 else round(value, 1)
+    return out
+
+
+def _package(pathogen_id, name, load_by_day, tropism, day, treatment):
+    """Build the output dictionary (load, curve, organs) from a daily load curve."""
+    days = np.arange(0, DAYS + 1)
+    load_by_day = np.clip(np.asarray(load_by_day, dtype=float), 0.0, 1.0)
+    organs = {}
+    for organ in ORGAN_IDS:
+        x = _damage_for_organ(tropism.get(organ, 0.0), load_by_day)[day]
+        organs[organ] = {
+            "score": int(round(100 * (1 - x))),
+            "vitals": _round_vitals(VITALS[organ](x, float(load_by_day[day]))),
+        }
+    return {
+        "pathogen_id": pathogen_id,
+        "name": name,
+        "day": day,
+        "treatment": treatment,
+        "load": round(float(load_by_day[day]), 4),
+        "curve": [{"day": int(d), "load": round(float(v), 4)} for d, v in zip(days, load_by_day)],
+        "organs": organs,
+    }
+
+
+def _clean_inputs(day, treatment):
+    return int(max(0, min(DAYS, day))), float(max(0.0, min(1.0, treatment)))
 
 
 # --------------------------------------------------------------------------
-# The two functions the backend calls
+# Functions the backend calls
 # --------------------------------------------------------------------------
 def list_pathogens():
-    """For GET /pathogens. Returns a list like [{"id": "virus_a", "name": "...", "kind": "virus"}]."""
-    return [{"id": pid, "name": p["name"], "kind": p["kind"]} for pid, p in PRESETS.items()]
+    """For GET /pathogens. Returns [{"id", "name", "kind", "preset": True}, ...]."""
+    return [{"id": pid, "name": p["name"], "kind": p["kind"], "preset": True}
+            for pid, p in PRESETS.items()]
 
 
 def simulate_pathogen(pathogen_id, day, treatment):
-    """Simulate one pathogen.
+    """Simulate one preset pathogen.
 
-    pathogen_id: "virus_a", "virus_b" or "bacterium_c"
+    pathogen_id: "respiratory_virus", "gut_virus" or "bloodstream_bacterium"
     day:         0 to 30 (the day shown on the slider)
     treatment:   0 to 1 (drug or antibiotic strength, starts on day 0)
 
@@ -183,28 +225,44 @@ def simulate_pathogen(pathogen_id, day, treatment):
     """
     if pathogen_id not in PRESETS:
         raise ValueError("Unknown pathogen_id: %s" % pathogen_id)
-    day = int(max(0, min(DAYS, day)))
-    treatment = float(max(0.0, min(1.0, treatment)))
-
+    day, treatment = _clean_inputs(day, treatment)
     days = np.arange(0, DAYS + 1)
     load_by_day = _solve(pathogen_id, treatment, days) / _untreated_peak(pathogen_id)
-    load_by_day = np.clip(load_by_day, 0.0, 1.0)
+    return _package(pathogen_id, PRESETS[pathogen_id]["name"], load_by_day,
+                    PRESETS[pathogen_id]["tropism"], day, treatment)
 
-    tropism = PRESETS[pathogen_id]["tropism"]
-    organs = {}
-    for organ in ORGAN_IDS:
-        x = _damage_for_organ(tropism[organ], load_by_day)[day]
-        organs[organ] = {
-            "score": int(round(100 * (1 - x))),
-            "vitals": _round_vitals(VITALS[organ](x)),
-        }
 
-    return {
-        "pathogen_id": pathogen_id,
-        "name": PRESETS[pathogen_id]["name"],
-        "day": day,
-        "treatment": treatment,
-        "load": round(float(load_by_day[day]), 4),
-        "curve": [{"day": int(d), "load": round(float(l), 4)} for d, l in zip(days, load_by_day)],
-        "organs": organs,
-    }
+def _value(p):
+    """Accept either 0.8 or {"value": 0.8, "low": ..., "high": ...}."""
+    return float(p["value"] if isinstance(p, dict) else p)
+
+
+def simulate_custom(parameters, target_organs, day, treatment, name="Uploaded pathogen",
+                    pathogen_id="uploaded"):
+    """Simulate a pathogen that was uploaded and fitted with fit_pathogen (fitting.py).
+
+    parameters:    the "parameters" output of fit_pathogen (needs growth_rate, decay_rate, peak_day)
+    target_organs: organ ids the pathogen attacks, e.g. ["lungs"] (fit_pathogen returns them).
+                   If the list has no known organ, the pathogen is treated as systemic.
+    Treatment lowers the peak by up to 90 percent and speeds up the decline by up to 2 times.
+    """
+    try:
+        growth = _value(parameters["growth_rate"])
+        decay = _value(parameters["decay_rate"])
+        peak_day = _value(parameters["peak_day"])
+    except (KeyError, TypeError):
+        raise ValueError("parameters must contain growth_rate, decay_rate and peak_day")
+    day, treatment = _clean_inputs(day, treatment)
+    peak_day = max(0.0, min(float(DAYS), peak_day))
+
+    t = np.arange(0, DAYS + 1, dtype=float)
+    decay_eff = decay * (1.0 + treatment)
+    shape = 2.0 / (np.exp(-growth * (t - peak_day)) + np.exp(decay_eff * (t - peak_day)))
+    load_by_day = shape * (1.0 - 0.9 * treatment)
+
+    targets = [o for o in (target_organs or []) if o in ORGAN_IDS]
+    if targets:
+        tropism = {o: (0.9 if o in targets else 0.1) for o in ORGAN_IDS}
+    else:
+        tropism = {o: 0.4 for o in ORGAN_IDS}
+    return _package(pathogen_id, name, load_by_day, tropism, day, treatment)
