@@ -90,3 +90,7 @@ What the profile changes (all SAMPLE assumptions, in `_adjustments` in `pathogen
 - **Body mass index (adults only):** overweight raises lung and heart damage; underweight raises damage for all organs.
 - **Face scan:** a measured resting heart rate or breathing rate replaces the default resting value. The change caused by
   the infection is added on top. These are webcam estimates and must be labelled as estimates.
+
+## Example outputs for teammates
+`python export_samples.py` writes `sample_output/*.json` (one file per call, with a `README.txt`).
+Rakhi, Rudraksh and Shambhavi can build and test against these files without running Python.

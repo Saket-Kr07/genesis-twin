@@ -1,0 +1,20 @@
+[
+ {
+  "id": "respiratory_virus",
+  "name": "Sample respiratory virus",
+  "kind": "virus",
+  "preset": true
+ },
+ {
+  "id": "gut_virus",
+  "name": "Sample gut virus",
+  "kind": "virus",
+  "preset": true
+ },
+ {
+  "id": "bloodstream_bacterium",
+  "name": "Sample bloodstream bacterium",
+  "kind": "bacteria",
+  "preset": true
+ }
+]
