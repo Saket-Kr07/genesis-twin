@@ -8,6 +8,7 @@ Shapes follow `backend/api-contract.md` (Rakhi). The contract keys are unchanged
 - `pathogen.py` : preset pathogens, ODE models, treatment, organ damage, vitals, timeline and uncertainty band.
 - `fitting.py` : CSV validation and curve fitting for uploaded pathogens.
 - `test_pathogen.py`, `test_fitting.py` : automatic tests (also used by CI).
+- `validate_published.py`, `test_validate.py` : check a preset against a real published time series (see below).
 - `demo_plot.py` : draws `curves.png`, `organs_day6.png`, `fit.png`, `late_treatment.png` and `body_profiles.png` for the report.
 - `sample_data/example_pathogen.csv` : synthetic example for testing uploads (not real data).
 
@@ -94,3 +95,18 @@ What the profile changes (all SAMPLE assumptions, in `_adjustments` in `pathogen
 ## Example outputs for teammates
 `python export_samples.py` writes `sample_output/*.json` (one file per call, with a `README.txt`).
 Rakhi, Rudraksh and Shambhavi can build and test against these files without running Python.
+
+## Validation against real published data
+```
+python validate_published.py --csv data.csv --pathogen respiratory_virus --label "Author Year, DOI 10.xxxx/xxxx"
+```
+- `data.csv` needs the columns `day` and `load`, taken from a published paper (a supplementary table, or a figure read with a free
+  tool such as WebPlotDigitizer). Add `--log10` if the paper's load is in log10 units. Remove values at or below the detection limit.
+- The citation (`--label`) is required. Only use real data you can cite.
+- It fits the rise-and-fall curve to the published data and to our preset, and compares the growth rate and decay rate
+  (these do not depend on which day the paper calls day 0), then the overall shape after the best shift in days.
+- It writes `validation_output/validation.png`, `validation_report.json` and `validation_report.md`, with a verdict
+  (agrees, partly agrees, does not agree) and which preset parameters to change if it does not agree.
+- Agreement means the rate is inside the published 95 percent range or within 30 percent of it (`--tolerance`).
+- A match checks the SHAPE of our sample pathogen against one paper. It is not proof that the model is correct in general.
+- The tests use synthetic data only, to check that the script works. Never put synthetic results in the report as validation.
