@@ -8,6 +8,7 @@ Shapes follow `backend/api-contract.md` (Rakhi). The contract keys are unchanged
 - `pathogen.py` : preset pathogens, ODE models, treatment, organ damage, vitals, timeline and uncertainty band.
 - `fitting.py` : CSV validation and curve fitting for uploaded pathogens.
 - `test_pathogen.py`, `test_fitting.py` : automatic tests (also used by CI).
+- `tropism.py`, `test_tropism.py` : organ tropism from receptor expression data (see below).
 - `validate_published.py`, `test_validate.py` : check a preset against a real published time series (see below).
 - `demo_plot.py` : draws `curves.png`, `organs_day6.png`, `fit.png`, `late_treatment.png` and `body_profiles.png` for the report.
 - `sample_data/example_pathogen.csv` : synthetic example for testing uploads (not real data).
@@ -110,3 +111,25 @@ python validate_published.py --csv data.csv --pathogen respiratory_virus --label
 - Agreement means the rate is inside the published 95 percent range or within 30 percent of it (`--tolerance`).
 - A match checks the SHAPE of our sample pathogen against one paper. It is not proof that the model is correct in general.
 - The tests use synthetic data only, to check that the script works. Never put synthetic results in the report as validation.
+
+## Tropism from receptor expression data (tropism.py)
+Tropism says how strongly a pathogen attacks each organ. The presets use hand-set SAMPLE values. For a real pathogen,
+start from where its entry receptor is expressed:
+```
+python tropism.py --file normal_tissue.tsv --gene ACE2 --label "Human Protein Atlas, version X, gene ACE2" --out tropism_ACE2.json
+```
+- Download the table yourself from the Human Protein Atlas (or similar), keep the rows of your gene, and cite it. Check the
+  file's licence. Levels (Not detected, Low, Medium, High) become 0, 0.3, 0.6, 0.9; numbers such as nTPM are scaled so the top
+  tissue is 0.9. `sample_data/example_expression_SYNTHETIC.tsv` is a made-up table that only tests the code.
+- Tissue names map to the 12 organ ids (`fitting.tissue_to_organ`). Immune tissues map to the spleen, endocrine glands to the
+  thyroid, gallbladder to the liver. Tissues with no organ (for example skeletal muscle) are listed and ignored.
+- In Python: `result = tropism_from_expression(text, gene="ACE2", source="...")`, then
+  `simulate_custom(parameters, [], day, treatment, tropism=result["tropism"])`. Organs with no data get 0.05.
+
+## Model version (for experiment records and the research pipeline)
+- Every result has `model_version` (now `pathogen-lab-1.4.0`). Save it with each experiment so results can be reproduced.
+- `model_info()` returns the version, settings and the preset parameters and tropism (copies, safe to edit).
+
+## Changes
+- 1.4.0: tropism from receptor data, `model_version`, `model_info()`, fix: adrenal and gallbladder tissues were mapped to the wrong organ.
+- 1.3.0: body profile. 1.2.0: smooth timeline, treatment start, bands, status. 1.1.0: contract names, CSV fitting. 1.0.0: presets.

@@ -42,6 +42,31 @@ TISSUE_WORDS = [
 ]
 
 
+# Checked FIRST, because their names contain words from the list above ("adrenal" contains "renal",
+# "gallbladder" contains "bladder"). Endocrine glands are grouped with the thyroid organ id, gallbladder with the liver.
+TISSUE_PRIORITY = [
+    (("adrenal", "pituitary", "parathyroid"), "thyroid"),
+    (("gallbladder",), "liver"),
+]
+# Checked LAST: extra names used by the Human Protein Atlas and similar tables.
+TISSUE_EXTRA = [
+    (("nasopharynx", "pharynx", "larynx", "epiglottis"), "lungs"),          # upper airway
+    (("duodenum", "jejunum", "ileum", "rectum", "appendix"), "intestines"),
+    (("cerebral", "cerebell", "hippocamp", "hypothal", "caudate", "amygdala", "spinal"), "brain"),
+    (("lymph", "tonsil", "thymus", "bone marrow"), "spleen"),               # immune tissues use the spleen organ id
+    (("endometri", "fallopian", "cervix", "vagina", "epididym", "seminal"), "reproductive"),
+]
+
+
+def tissue_to_organ(name):
+    """Map a tissue name (for example 'urinary bladder', 'cerebral cortex') to one of the 12 organ ids, or None."""
+    low = str(name).lower()
+    for words, organ in TISSUE_PRIORITY + TISSUE_WORDS + TISSUE_EXTRA:
+        if any(w in low for w in words):
+            return organ
+    return None
+
+
 def _curve(t, peak_load, peak_day, growth, decay):
     """Rise and fall curve. Equals peak_load at t = peak_day."""
     return 2.0 * peak_load / (np.exp(-growth * (t - peak_day)) + np.exp(decay * (t - peak_day)))
@@ -122,8 +147,7 @@ def _read_csv(csv_text):
 def _map_tissues(tissues):
     organs, unknown = [], []
     for name in dict.fromkeys(t for t in tissues):  # unique, keep order
-        low = name.lower()
-        hit = next((organ for words, organ in TISSUE_WORDS if any(w in low for w in words)), None)
+        hit = tissue_to_organ(name)
         if hit is None:
             unknown.append(name)
         elif hit not in organs:

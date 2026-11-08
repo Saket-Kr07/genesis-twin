@@ -8,8 +8,9 @@ import json
 import os
 
 from fitting import fit_pathogen
-from pathogen import (describe_profile, list_pathogens, load_band, simulate_custom,
+from pathogen import (describe_profile, list_pathogens, load_band, model_info, simulate_custom,
                       simulate_pathogen, simulate_timeline)
+from tropism import tropism_from_expression
 
 OUT = "sample_output"
 ADULT = {"sex": "male", "age": 30, "height_cm": 175, "weight_kg": 70}
@@ -39,6 +40,14 @@ save("fit_good_file.json", fit)
 save("fit_bad_file.json", fit_pathogen("day,load\n0,1\n1,-3\n2,\n3,abc\n4,2"))
 save("simulate_uploaded_day6.json", simulate_custom(fit["parameters"], fit["target_organs"], 6, 0.0))
 
+with open("sample_data/example_expression_SYNTHETIC.tsv") as f:
+    expression = tropism_from_expression(f.read(), gene="EXAMPLEGENE",
+                                         source="SYNTHETIC example, not real Human Protein Atlas data")
+save("tropism_example_SYNTHETIC.json", expression)
+save("simulate_uploaded_with_tropism_day6.json",
+     simulate_custom(fit["parameters"], [], 6, 0.0, tropism=expression["tropism"]))
+save("model_info.json", model_info())
+
 with open(os.path.join(OUT, "README.txt"), "w") as f:
     f.write("""Example outputs of the pathogen lab (sample values, research and education only).
 
@@ -51,5 +60,8 @@ profile_summary_child.json         summary for the profile form (BMI, age group,
 fit_good_file.json                 POST /pathogens/upload with a good CSV
 fit_bad_file.json                  POST /pathogens/upload with a bad CSV (plain-language errors)
 simulate_uploaded_day6.json        simulating the uploaded pathogen
+tropism_example_SYNTHETIC.json     tropism from a receptor expression table (SYNTHETIC numbers, shape only)
+simulate_uploaded_with_tropism_day6.json   the uploaded pathogen using that tropism
+model_info.json                    model version, settings and preset parameters
 """)
 print("wrote README.txt")

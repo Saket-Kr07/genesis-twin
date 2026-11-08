@@ -1,6 +1,7 @@
 {
  "pathogen_id": "respiratory_virus",
  "name": "Sample respiratory virus",
+ "model_version": "pathogen-lab-1.4.0",
  "treatment": 0.5,
  "treatment_start": 2,
  "profile": {

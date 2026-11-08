@@ -9,3 +9,6 @@ profile_summary_child.json         summary for the profile form (BMI, age group,
 fit_good_file.json                 POST /pathogens/upload with a good CSV
 fit_bad_file.json                  POST /pathogens/upload with a bad CSV (plain-language errors)
 simulate_uploaded_day6.json        simulating the uploaded pathogen
+tropism_example_SYNTHETIC.json     tropism from a receptor expression table (SYNTHETIC numbers, shape only)
+simulate_uploaded_with_tropism_day6.json   the uploaded pathogen using that tropism
+model_info.json                    model version, settings and preset parameters

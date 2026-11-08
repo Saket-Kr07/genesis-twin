@@ -1,6 +1,7 @@
 {
  "pathogen_id": "uploaded",
  "name": "Uploaded pathogen",
+ "model_version": "pathogen-lab-1.4.0",
  "day": 6,
  "treatment": 0.0,
  "treatment_start": 0,

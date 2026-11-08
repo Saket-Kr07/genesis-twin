@@ -18,6 +18,7 @@ Functions the backend (Rakhi) calls (every function takes an optional profile=No
     load_band(id, treatment, treatment_start=0, ..., profile=None)      uncertainty band
     simulate_custom(parameters, target_organs, day, treatment, ..., profile=None)   uploaded pathogen
     simulate_custom_timeline(parameters, target_organs, treatment, ..., profile=None)
+    model_info()                                               version, settings and preset parameters
     describe_profile(profile)                                  summary card for the profile form
 (fit_pathogen for CSV uploads lives in fitting.py)
 
@@ -36,6 +37,7 @@ from functools import lru_cache
 import numpy as np
 from scipy.integrate import solve_ivp
 
+MODEL_VERSION = "pathogen-lab-1.4.0"   # saved with every experiment so results can be reproduced
 DAYS = 30                      # we simulate day 0 to day 30
 STEPS_PER_DAY = 4              # fine grid: every quarter of a day
 FINE_T = np.linspace(0, DAYS, DAYS * STEPS_PER_DAY + 1)   # 121 points
@@ -411,6 +413,7 @@ def _result(core, day):
     return {
         "pathogen_id": core["pathogen_id"],
         "name": core["name"],
+        "model_version": MODEL_VERSION,
         "day": day,
         "treatment": core["treatment"],
         "treatment_start": core["start"],
@@ -427,6 +430,7 @@ def _timeline(core):
     return {
         "pathogen_id": core["pathogen_id"],
         "name": core["name"],
+        "model_version": MODEL_VERSION,
         "treatment": core["treatment"],
         "treatment_start": core["start"],
         "profile": core["profile"],
@@ -543,7 +547,27 @@ def _value(p):
     return float(p["value"] if isinstance(p, dict) else p)
 
 
-def _custom_core(parameters, target_organs, treatment, start, name, pathogen_id, profile):
+def _clean_tropism(tropism):
+    """Check an organ-to-tropism dictionary ({organ_id: 0 to 1}). Organs not listed get a small default (0.05)."""
+    if tropism is None:
+        return None
+    if not isinstance(tropism, dict):
+        raise ValueError("tropism must be an object like {organ_id: number from 0 to 1}")
+    out = {}
+    for organ, value in tropism.items():
+        if organ not in ORGAN_IDS:
+            raise ValueError("Unknown organ id in tropism: %s" % organ)
+        try:
+            value = float(value)
+        except (TypeError, ValueError):
+            raise ValueError("tropism values must be numbers between 0 and 1")
+        if not (0.0 <= value <= 1.0):
+            raise ValueError("tropism values must be between 0 and 1 (found %g for %s)" % (value, organ))
+        out[organ] = value
+    return {o: out.get(o, 0.05) for o in ORGAN_IDS}
+
+
+def _custom_core(parameters, target_organs, treatment, start, name, pathogen_id, profile, tropism=None):
     try:
         growth = _value(parameters["growth_rate"])
         decay = _value(parameters["decay_rate"])
@@ -558,25 +582,44 @@ def _custom_core(parameters, target_organs, treatment, start, name, pathogen_id,
     ramp = np.clip((FINE_T - start) / 2.0, 0.0, 1.0)
     load = np.clip(shape * (1.0 - 0.9 * _effect(treatment) * ramp), 0.0, 1.0)
 
-    targets = [o for o in (target_organs or []) if o in ORGAN_IDS]
-    tropism = {o: (0.9 if o in targets else 0.1) for o in ORGAN_IDS} if targets else {o: 0.4 for o in ORGAN_IDS}
-    return _make_core(pathogen_id, name, load, tropism, treatment, start, profile)
+    custom = _clean_tropism(tropism)
+    if custom is not None:
+        values = custom
+    else:
+        targets = [o for o in (target_organs or []) if o in ORGAN_IDS]
+        values = {o: (0.9 if o in targets else 0.1) for o in ORGAN_IDS} if targets else {o: 0.4 for o in ORGAN_IDS}
+    return _make_core(pathogen_id, name, load, values, treatment, start, profile)
 
 
 def simulate_custom(parameters, target_organs, day, treatment, name="Uploaded pathogen",
-                    pathogen_id="uploaded", treatment_start=0, profile=None):
+                    pathogen_id="uploaded", treatment_start=0, profile=None, tropism=None):
     """Simulate a pathogen that was fitted with fit_pathogen (fitting.py).
 
     parameters:    the "parameters" output of fit_pathogen (growth_rate, decay_rate, peak_day)
     target_organs: organ ids the pathogen attacks, e.g. ["lungs"] (fit_pathogen returns them).
                    If the list has no known organ, the pathogen is treated as systemic.
+    tropism:       optional {organ_id: 0 to 1}, for example the "tropism" from tropism.py (receptor expression
+                   data). When given, it is used instead of target_organs.
     """
     treatment, start, day = _clean(treatment, treatment_start, day)
-    return _result(_custom_core(parameters, target_organs, treatment, start, name, pathogen_id, profile), day)
+    return _result(_custom_core(parameters, target_organs, treatment, start, name, pathogen_id, profile, tropism), day)
 
 
 def simulate_custom_timeline(parameters, target_organs, treatment, treatment_start=0,
-                             name="Uploaded pathogen", pathogen_id="uploaded", profile=None):
+                             name="Uploaded pathogen", pathogen_id="uploaded", profile=None, tropism=None):
     """Same as simulate_timeline, for an uploaded pathogen."""
     treatment, start, _ = _clean(treatment, treatment_start)
-    return _timeline(_custom_core(parameters, target_organs, treatment, start, name, pathogen_id, profile))
+    return _timeline(_custom_core(parameters, target_organs, treatment, start, name, pathogen_id, profile, tropism))
+
+
+def model_info():
+    """Version, settings and preset parameters. Save the version with every experiment, and let the weekly
+    research pipeline (Punya) read the current parameters from here."""
+    return {
+        "model_version": MODEL_VERSION,
+        "settings": {"days": DAYS, "steps_per_day": STEPS_PER_DAY, "damage_rate": K_DAMAGE, "heal_rate": K_HEAL,
+                     "dose_ec50": DOSE_EC50, "dose_hill": DOSE_HILL},
+        "presets": {pid: {"name": p["name"], "kind": p["kind"], "params": dict(p["params"]),
+                          "tropism": dict(p["tropism"])} for pid, p in PRESETS.items()},
+        "note": "All values are sample values for a demo, not real outbreak or clinical data.",
+    }

@@ -94,3 +94,8 @@ def test_rise_only_data_gives_a_warning():
     text = "day,load\n0,1\n1,2\n2,4\n3,8\n4,16\n5,32"
     result = fit_pathogen(text)
     assert any("first or last" in w for w in result["warnings"]) or result["parameters"] is None
+
+
+def test_tissue_mapping_does_not_confuse_adrenal_or_gallbladder():
+    assert fit_pathogen(make_csv(tissue="adrenal gland"))["target_organs"] == ["thyroid"]
+    assert fit_pathogen(make_csv(tissue="gallbladder"))["target_organs"] == ["liver"]
