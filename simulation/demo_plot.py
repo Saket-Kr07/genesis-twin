@@ -1,7 +1,7 @@
 """Draws pictures of the model so you can check it and use them in the report.
 
 Run:  python demo_plot.py
-Creates: curves.png, organs_day6.png, fit.png and late_treatment.png in this folder.
+Creates: curves.png, organs_day6.png, fit.png, late_treatment.png and body_profiles.png here.
 """
 import csv
 import json
@@ -80,7 +80,33 @@ ax4.legend(fontsize=8)
 fig4.tight_layout()
 fig4.savefig("late_treatment.png", dpi=140)
 
+# Picture 5: the same infection in different bodies (child, adult woman, adult man, older man, large body)
+people = {
+    "child, 8 y, 128 cm": {"sex": "female", "age": 8, "height_cm": 128, "weight_kg": 26},
+    "woman, 30 y, 165 cm": {"sex": "female", "age": 30, "height_cm": 165, "weight_kg": 60},
+    "man, 30 y, 175 cm": {"sex": "male", "age": 30, "height_cm": 175, "weight_kg": 70},
+    "older man, 78 y": {"sex": "male", "age": 78, "height_cm": 170, "weight_kg": 72},
+    "man, 40 y, 115 kg": {"sex": "male", "age": 40, "height_cm": 175, "weight_kg": 115},
+}
+fig5, (a1, a2, a3) = plt.subplots(1, 3, figsize=(13, 3.6))
+for label, profile in people.items():
+    tl = simulate_timeline("respiratory_virus", 0.0, 0, profile)
+    a1.plot(tl["times"], tl["scores"]["lungs"], linewidth=2, label=label)
+    a2.plot(tl["times"], tl["load"], linewidth=2)
+    a3.bar(label.split(",")[0] + "\n" + label.split(",")[-1].strip()[:12],
+           simulate_pathogen("respiratory_virus", 0, 0.0, profile=profile)["organs"]["lungs"]["vitals"]["lung_capacity"])
+a1.set_title("lung health score")
+a2.set_title("pathogen load")
+a3.set_title("resting lung capacity (L)")
+for a in (a1, a2):
+    a.set_xlabel("day")
+    a.grid(alpha=0.3)
+a3.tick_params(axis="x", labelsize=6)
+a1.legend(fontsize=7)
+fig5.tight_layout()
+fig5.savefig("body_profiles.png", dpi=140)
+
 # What the backend receives (lungs only, to keep the print short)
 sample = simulate_pathogen("respiratory_virus", 6, 0.0)
 print(json.dumps({"load": sample["load"], "lungs": sample["organs"]["lungs"]}, indent=2))
-print("Saved curves.png, organs_day6.png, fit.png and late_treatment.png")
+print("Saved curves.png, organs_day6.png, fit.png, late_treatment.png and body_profiles.png")

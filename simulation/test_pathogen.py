@@ -209,3 +209,105 @@ def test_custom_timeline_and_late_treatment():
     early = max(simulate_custom_timeline(PARAMS, ["lungs"], 1.0, 0)["load"])
     after_peak = max(simulate_custom_timeline(PARAMS, ["lungs"], 1.0, 10)["load"])
     assert early < 0.3 and after_peak > 0.95
+
+
+# ---- body profile: male, female, child, older, height, weight, face-scan baseline ----
+from pathogen import clean_profile, describe_profile
+
+ADULT = {"sex": "male", "age": 30, "height_cm": 175, "weight_kg": 70}
+CHILD = {"sex": "female", "age": 8, "height_cm": 128, "weight_kg": 26}
+OLDER = {"sex": "male", "age": 78, "height_cm": 170, "weight_kg": 72}
+OBESE = {"sex": "male", "age": 40, "height_cm": 175, "weight_kg": 115}
+UNDERWEIGHT = {"sex": "female", "age": 25, "height_cm": 170, "weight_kg": 48}
+
+
+def worst(profile, organ="lungs", pid="respiratory_virus"):
+    return min(simulate_timeline(pid, 0.0, 0, profile)["scores"][organ])
+
+
+def day0(profile, organ, vital):
+    return simulate_pathogen("respiratory_virus", 0, 0.0, profile=profile)["organs"][organ]["vitals"][vital]
+
+
+def test_no_profile_is_unchanged_and_the_reference_adult_matches_it():
+    plain = simulate_pathogen("respiratory_virus", 7, 0.2)
+    assert plain["profile"] is None and plain["profile_effects"] == []
+    adult = simulate_pathogen("respiratory_virus", 7, 0.2, profile=ADULT)
+    assert adult["organs"]["lungs"]["score"] == plain["organs"]["lungs"]["score"]
+    assert adult["organs"]["lungs"]["vitals"] == plain["organs"]["lungs"]["vitals"]
+
+
+def test_older_body_is_hit_harder():
+    assert worst(OLDER) < worst(ADULT)
+
+
+def test_weaker_immune_response_prolongs_the_infection():
+    adult = simulate_timeline("respiratory_virus", 0.0, 0, ADULT)["load"]
+    older = simulate_timeline("respiratory_virus", 0.0, 0, OLDER)["load"]
+    day = 8 * STEPS_PER_DAY
+    assert older[day] > adult[day]
+
+
+def test_obesity_and_underweight_raise_vulnerability_but_not_for_children():
+    assert worst(OBESE) < worst(ADULT)
+    assert worst(UNDERWEIGHT, "kidneys") < worst(ADULT, "kidneys")
+    assert worst(CHILD) == worst(ADULT)
+    effects = simulate_pathogen("respiratory_virus", 5, 0, profile=CHILD)["profile_effects"]
+    assert any("under 18" in e for e in effects)
+
+
+def test_child_resting_values_differ_from_an_adult():
+    assert day0(CHILD, "heart", "heart_rate") > day0(ADULT, "heart", "heart_rate")
+    assert day0(CHILD, "lungs", "breathing_rate") > day0(ADULT, "lungs", "breathing_rate")
+    assert day0(CHILD, "lungs", "lung_capacity") < 0.5 * day0(ADULT, "lungs", "lung_capacity")
+    systolic = lambda p: int(day0(p, "heart", "blood_pressure").split("/")[0])
+    assert systolic(CHILD) < systolic(ADULT) < systolic(OLDER)
+
+
+def test_height_sex_and_age_change_baseline_values():
+    tall = dict(ADULT, height_cm=190)
+    short = dict(ADULT, height_cm=160)
+    assert day0(tall, "lungs", "lung_capacity") > day0(short, "lungs", "lung_capacity")
+    assert day0(dict(ADULT, sex="female"), "lungs", "lung_capacity") < day0(ADULT, "lungs", "lung_capacity")
+    assert day0(OLDER, "kidneys", "egfr") < day0(ADULT, "kidneys", "egfr")
+
+
+def test_face_scan_baseline_sets_the_resting_value_then_rises_with_damage():
+    scan = dict(ADULT, baseline_vitals={"heart_rate": 90, "breathing_rate": 18})
+    assert day0(scan, "heart", "heart_rate") == 90
+    assert day0(scan, "lungs", "breathing_rate") == 18
+    later = simulate_pathogen("respiratory_virus", 7, 0.0, profile=scan)["organs"]["heart"]["vitals"]["heart_rate"]
+    assert later > 90
+    effects = simulate_pathogen("respiratory_virus", 0, 0.0, profile=scan)["profile_effects"]
+    assert any("face scan" in e for e in effects)
+
+
+def test_missing_profile_fields_use_the_reference_adult():
+    assert clean_profile({}) == dict(ADULT, age=30.0, height_cm=175.0, weight_kg=70.0, baseline_vitals={})
+    assert clean_profile({"sex": "female"})["age"] == 30.0
+
+
+@pytest.mark.parametrize("bad", [
+    {"sex": "robot"}, {"age": 200}, {"age": -1}, {"height_cm": 10}, {"weight_kg": "heavy"},
+    {"height_cm": 100, "weight_kg": 200}, {"baseline_vitals": {"heart_rate": 400}}, "male",
+])
+def test_bad_profiles_raise_a_plain_error(bad):
+    with pytest.raises(ValueError):
+        simulate_pathogen("respiratory_virus", 5, 0, profile=bad)
+
+
+def test_describe_profile_for_the_form():
+    info = describe_profile(OLDER)
+    assert info["age_group"] == "older" and info["bmi"] == pytest.approx(24.9, abs=0.1)
+    assert info["effects"] and describe_profile(CHILD)["age_group"] == "child"
+    assert describe_profile(None)["profile"]["sex"] == "male"
+
+
+def test_profile_works_for_band_custom_and_timeline():
+    band = load_band("respiratory_virus", 0.0, profile=OLDER)
+    assert len(band["low"]) == len(FINE_T)
+    adult = simulate_custom_timeline(PARAMS, ["lungs"], 0.0, profile=ADULT)["load"]
+    older = simulate_custom_timeline(PARAMS, ["lungs"], 0.0, profile=OLDER)["load"]
+    assert older[12 * STEPS_PER_DAY] > adult[12 * STEPS_PER_DAY]
+    tl = simulate_timeline("gut_virus", 0.3, 2, CHILD)
+    assert tl["profile"]["age"] == 8.0 and len(tl["days"]) == DAYS + 1

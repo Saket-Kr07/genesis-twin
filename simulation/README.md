@@ -8,7 +8,7 @@ Shapes follow `backend/api-contract.md` (Rakhi). The contract keys are unchanged
 - `pathogen.py` : preset pathogens, ODE models, treatment, organ damage, vitals, timeline and uncertainty band.
 - `fitting.py` : CSV validation and curve fitting for uploaded pathogens.
 - `test_pathogen.py`, `test_fitting.py` : automatic tests (also used by CI).
-- `demo_plot.py` : draws `curves.png`, `organs_day6.png`, `fit.png` and `late_treatment.png` for the report.
+- `demo_plot.py` : draws `curves.png`, `organs_day6.png`, `fit.png`, `late_treatment.png` and `body_profiles.png` for the report.
 - `sample_data/example_pathogen.csv` : synthetic example for testing uploads (not real data).
 
 ## Run it
@@ -33,6 +33,8 @@ from fitting import fit_pathogen
 | POST /pathogens/simulate (preset) | `simulate_pathogen("respiratory_virus", day=6, treatment=0.3)` |
 | same, treatment starts late | `simulate_pathogen(..., treatment_start=3)` (optional, default 0) |
 | whole timeline in one call (for the sliders) | `simulate_timeline("respiratory_virus", treatment=0.3, treatment_start=0)` |
+| body profile (child, adult, older, height, weight, face scan) | add `profile={...}` to any call below (see Body profile) |
+| profile summary for the form | `describe_profile(profile)` |
 | uncertainty band | `load_band("respiratory_virus", treatment=0.3)` |
 | POST /pathogens/upload | `fit_pathogen(csv_text)` (str or bytes) |
 | POST /pathogens/simulate (uploaded) | `simulate_custom(parameters, target_organs, day, treatment)` or `simulate_custom_timeline(...)` |
@@ -65,3 +67,26 @@ Store the `parameters` and `target_organs` from the upload and pass them to `sim
 ### Notes
 - Treatment is a slider from 0 to 1 with diminishing returns (0.5 gives about 70 percent of the full effect).
 - Results are cached, so dragging a slider is fast (about 4 ms per call).
+
+## Body profile (male, female, child, older, height, weight, face scan)
+Every simulate function and `load_band` take an optional `profile`:
+```python
+profile = {"sex": "female", "age": 8, "height_cm": 128, "weight_kg": 26,
+           "baseline_vitals": {"heart_rate": 92, "breathing_rate": 22}}   # last part optional (face scan)
+simulate_timeline("respiratory_virus", treatment=0.3, profile=profile)
+describe_profile(profile)   # {"profile", "bmi", "age_group", "effects"} for the profile form
+```
+- Missing fields use a reference adult (male, 30 years, 175 cm, 70 kg). No profile gives the same result as before.
+- Allowed ranges: age 0 to 110, height 40 to 230 cm, weight 2 to 250 kg (height and weight must look realistic together),
+  face-scan heart rate 30 to 220, breathing rate 4 to 60. Bad input raises `ValueError` with a plain message.
+- The output has two extra keys: `profile` (the cleaned profile) and `profile_effects` (a list of plain sentences naming
+  every assumption that was applied). Show this list in the UI so the assumptions are visible.
+
+What the profile changes (all SAMPLE assumptions, in `_adjustments` in `pathogen.py`):
+- **Age 40 to 65 and above:** weaker immune response (down to 80 percent) and less organ reserve (10 percent).
+- **Children (under 18):** higher resting heart and breathing rate, lower blood pressure. No extra infection assumptions.
+- **Height, sex and age:** resting lung capacity scales with height cubed, is lower for females and for older adults;
+  kidney eGFR falls after 40.
+- **Body mass index (adults only):** overweight raises lung and heart damage; underweight raises damage for all organs.
+- **Face scan:** a measured resting heart rate or breathing rate replaces the default resting value. The change caused by
+  the infection is added on top. These are webcam estimates and must be labelled as estimates.
