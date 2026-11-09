@@ -23,6 +23,8 @@ from scipy.optimize import curve_fit
 
 MIN_POINTS = 5
 MAX_ROWS = 5000
+RATE_LOW, RATE_HIGH = 0.01, 20.0      # allowed range of growth and decay rates in the fit (per day)
+WIDE_RANGE_FACTOR = 3.0               # a 95% range wider than 3 x the value is too wide to trust
 
 # Words in the tissue column mapped to organ ids (checked in order).
 TISSUE_WORDS = [
@@ -119,7 +121,10 @@ def _read_csv(csv_text):
                 errors.append("Row %d: %s must be a number (found '%s')." % (line_no, label, raw.strip()))
                 row_ok = False
             elif _number(raw) < 0:
-                errors.append("Row %d: %s cannot be negative." % (line_no, label))
+                hint = (" Number the days from 0, for example counting from the first sample."
+                        if label == "day" else
+                        " Remove values below the detection limit, or set them to 0.")
+                errors.append("Row %d: %s cannot be negative.%s" % (line_no, label, hint))
                 row_ok = False
         if not row_ok:
             continue
@@ -155,8 +160,19 @@ def _map_tissues(tissues):
     return organs, unknown
 
 
+def rate_reliability(entry):
+    """Is a fitted rate trustworthy? Returns 'ok', 'at_limit' (the fit hit the edge of its allowed range)
+    or 'wide_range' (the 95 percent range is missing or far wider than the value)."""
+    value, low, high = entry["value"], entry["low"], entry["high"]
+    if value <= RATE_LOW * 1.01 or value >= RATE_HIGH * 0.999:
+        return "at_limit"
+    if low is None or high is None or (high - low) > WIDE_RANGE_FACTOR * value:
+        return "wide_range"
+    return "ok"
+
+
 def _failed(errors):
-    return {"parameters": None, "validation_errors": errors, "warnings": [], "fit": None,
+    return {"parameters": None, "reliability": {}, "validation_errors": errors, "warnings": [], "fit": None,
             "fitted_curve": [], "target_organs": [], "unrecognised_tissues": []}
 
 
@@ -164,6 +180,7 @@ def fit_pathogen(csv_text):
     """Validate a CSV and fit the rise and fall curve.
 
     Returns (matches backend/api-contract.md, plus a few extra keys):
+      reliability        {"growth_rate": "ok" | "at_limit" | "wide_range", "decay_rate": ...}
       parameters         {"growth_rate": {"value", "low", "high"}, "decay_rate": ..., "peak_day": ..., "peak_load": ...}
                          or None if the file is bad
       validation_errors  list of plain-language messages (empty if the file is fine)
@@ -227,10 +244,21 @@ def fit_pathogen(csv_text):
     if n < 8:
         warnings.append("Only %d time points: the ranges are wide. More time points give tighter ranges." % n)
 
+    reliability = {k: rate_reliability(parameters[k]) for k in ("growth_rate", "decay_rate")}
+    names = {"growth_rate": "growth rate", "decay_rate": "decay rate"}
+    for k, state in reliability.items():
+        if state == "at_limit":
+            warnings.append("The %s is at the limit of the fitting range (%g to %g per day), so it is not a "
+                            "reliable estimate. Do not quote it as a measurement." % (names[k], RATE_LOW, RATE_HIGH))
+        elif state == "wide_range":
+            warnings.append("The %s has a very wide 95 percent range, so it is not a reliable estimate. "
+                            "More time points around the peak would help." % names[k])
+
     grid = np.arange(int(d.min()), int(min(d.max(), d.min() + 400)) + 1, dtype=float)
     target_organs, unknown = _map_tissues(tissues)
     return {
         "parameters": parameters,
+        "reliability": reliability,
         "validation_errors": [],
         "warnings": warnings,
         "fit": {"r_squared": r2, "points": n, "model": "rise_and_fall_curve"},

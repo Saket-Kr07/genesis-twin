@@ -60,12 +60,15 @@ def _preset_csv(pathogen_id):
     return "day,load\n" + "\n".join("%d,%.6f" % (p["day"], p["load"]) for p in curve)
 
 
-def _rate(name, published, preset_value, tolerance):
+def _rate(name, published, preset_value, tolerance, reliability="ok"):
     ratio = preset_value / published["value"] if published["value"] else float("nan")
     inside = published["low"] is not None and published["low"] <= preset_value <= published["high"]
+    reliable = reliability == "ok"
+    # An unreliable published rate cannot be agreed or disagreed with, so agrees is None for it.
+    agrees = bool(inside or abs(ratio - 1.0) <= tolerance) if reliable else None
     return {"name": name, "published": published, "preset": round(preset_value, 4),
             "ratio_preset_to_published": round(ratio, 3), "inside_published_range": bool(inside),
-            "agrees": bool(inside or abs(ratio - 1.0) <= tolerance)}
+            "reliability": reliability, "reliable": reliable, "agrees": agrees}
 
 
 def _shape(days, loads, pathogen_id):
@@ -105,21 +108,31 @@ def validate(csv_text, pathogen_id, label, log10=False, tolerance=0.3, outdir="v
     days = [p[0] for p in pairs]
     loads = [p[1] for p in pairs]
 
-    growth = _rate("growth_rate", published["parameters"]["growth_rate"], preset["parameters"]["growth_rate"]["value"], tolerance)
-    decay = _rate("decay_rate", published["parameters"]["decay_rate"], preset["parameters"]["decay_rate"]["value"], tolerance)
+    rel = published.get("reliability", {})
+    growth = _rate("growth_rate", published["parameters"]["growth_rate"], preset["parameters"]["growth_rate"]["value"],
+                   tolerance, rel.get("growth_rate", "ok"))
+    decay = _rate("decay_rate", published["parameters"]["decay_rate"], preset["parameters"]["decay_rate"]["value"],
+                  tolerance, rel.get("decay_rate", "ok"))
     offset, rmse, t, v = _shape(days, loads, pathogen_id)
     shape_good = rmse <= SHAPE_LIMIT
 
-    n_agree = int(growth["agrees"]) + int(decay["agrees"]) + int(shape_good)
-    verdict = "agrees" if n_agree == 3 else ("partly agrees" if n_agree >= 1 else "does not agree")
+    # Only reliable rates count. If neither rate is reliable, the data cannot support a verdict.
+    checks = [r["agrees"] for r in (growth, decay) if r["reliable"]] + [shape_good]
+    if not growth["reliable"] and not decay["reliable"]:
+        verdict = "inconclusive"
+    else:
+        n_agree = sum(bool(c) for c in checks)
+        verdict = "agrees" if n_agree == len(checks) else ("partly agrees" if n_agree >= 1 else "does not agree")
 
     advice = []
-    if not growth["agrees"]:
+    if growth["agrees"] is False:
         advice.append("The rise differs. In pathogen.py change beta or prod for this preset (they set the growth rate): "
                       "%s." % ("raise them" if growth["ratio_preset_to_published"] < 1 else "lower them"))
-    if not decay["agrees"]:
+    if decay["agrees"] is False:
         advice.append("The fall differs. Change clear, delta or kill for this preset (they set the decay rate): "
                       "%s." % ("raise them" if decay["ratio_preset_to_published"] < 1 else "lower them"))
+    if verdict == "inconclusive":
+        advice.append("Do not change the preset from this data: the published rates are not reliable estimates.")
 
     report = {
         "ok": True, "label": label, "pathogen_id": pathogen_id, "preset_name": PRESETS[pathogen_id]["name"],
@@ -186,7 +199,8 @@ def _markdown(r):
         p = r[k]["published"]
         rng = "%s to %s" % (p["low"], p["high"]) if p["low"] is not None else "not available"
         return "| %s | %s (%s) | %s | %s | %s |" % (k.replace("_", " "), p["value"], rng, r[k]["preset"],
-                                                  r[k]["ratio_preset_to_published"], "yes" if r[k]["agrees"] else "no")
+                                                  r[k]["ratio_preset_to_published"],
+                                                  {True: "yes", False: "no", None: "not reliable"}[r[k]["agrees"]])
     lines = [
         "# Validation against published data",
         "",
@@ -205,7 +219,10 @@ def _markdown(r):
             r["shape"]["best_offset_days"], r["shape"]["normalised_rmse"],
             "good match" if r["shape"]["good_match"] else "not a good match", r["shape"]["limit"]),
         "",
-        "**Verdict: our sample preset %s with this published time series.**" % r["verdict"],
+        ("**Verdict: inconclusive. The published rates are not reliable estimates (at the limit of the fitting range "
+         "or with a very wide range), so this series cannot show whether our sample preset agrees.**"
+         if r["verdict"] == "inconclusive" else
+         "**Verdict: our sample preset %s with this published time series.**" % r["verdict"]),
         "",
     ]
     if r["published_fit"]["warnings"]:
@@ -238,8 +255,10 @@ def main(argv=None):
             print(" -", e)
         return 1
     print("Verdict: %s" % report["verdict"])
-    print("Growth rate: published %.3f, preset %.3f" % (report["growth_rate"]["published"]["value"], report["growth_rate"]["preset"]))
-    print("Decay rate:  published %.3f, preset %.3f" % (report["decay_rate"]["published"]["value"], report["decay_rate"]["preset"]))
+    for key, label in (("growth_rate", "Growth rate:"), ("decay_rate", "Decay rate: ")):
+        r = report[key]
+        note = "" if r["reliable"] else "  (not reliable: %s)" % r["reliability"].replace("_", " ")
+        print("%s published %.3f, preset %.3f%s" % (label, r["published"]["value"], r["preset"], note))
     print("Shape RMSE: %.3f at a shift of %.2f days" % (report["shape"]["normalised_rmse"], report["shape"]["best_offset_days"]))
     print("Wrote %s/validation.png, validation_report.json and validation_report.md" % args.out)
     return 0
