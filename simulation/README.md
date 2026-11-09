@@ -133,3 +133,28 @@ python tropism.py --file normal_tissue.tsv --gene ACE2 --label "Human Protein At
 ## Changes
 - 1.4.0: tropism from receptor data, `model_version`, `model_info()`, fix: adrenal and gallbladder tissues were mapped to the wrong organ.
 - 1.3.0: body profile. 1.2.0: smooth timeline, treatment start, bands, status. 1.1.0: contract names, CSV fitting. 1.0.0: presets.
+
+## Real-data checks, fitting and extra tools (added Day 2 and 3)
+
+Research and education only. All preset values are labelled samples, not real outbreak data and not medical advice.
+
+**Preset ids:** `respiratory_virus`, `gut_virus`, `bloodstream_bacterium`.
+`simulate_pathogen(pathogen_id, day, treatment)` limits `day` to 0-30 and `treatment` to 0-1 (values outside are clamped). An unknown id raises `ValueError`.
+
+| File | What it does | How to run |
+|---|---|---|
+| `fitting.py` | `fit_pathogen(csv_text)`: checks a CSV (columns `day` and `load`, at least 5 points, no negative numbers) and fits a rise-and-fall curve. Returns growth and decay rates with 95% ranges, a `reliability` flag per rate and plain-language `warnings`. | imported by the API |
+| `validate_published.py` | Compares a preset with a real published time series. Verdict is `agrees`, `partly agrees`, `does not agree` or `inconclusive` (when the published rates are not reliable). | `python validate_published.py --csv real_data/caltech_participant1.csv --pathogen respiratory_virus --label "citation" --out real_data/validation_output` |
+| `tropism.py` | Builds a receptor-based tropism table from Human Protein Atlas expression. | `python tropism.py --file hpa_raw/rna_tissue_consensus.tsv --gene ACE2 --label "Human Protein Atlas version 25.1, RNA consensus tissue (nTPM), gene ACE2" --out real_data/tropism_ACE2.json` |
+| `fit_and_record.py` | Fits a CSV, simulates the fitted pathogen and saves a reproducible experiment record (JSON). | `python fit_and_record.py --csv real_data/caltech_participant1.csv --label "citation" --tropism real_data/tropism_ACE2.json --out real_data/experiment_participant1.json` |
+| `check_contract.py` | Checks that the output of the pathogen lab matches `backend/api-contract.md` (organ ids, score range, vitals names). | `python check_contract.py` |
+| `generations.py` | Wright-Fisher generation simulator: how a variant's frequency may change over generations, with a 95% range from many random runs. | `from generations import simulate_generations` |
+
+**Folders**
+- `real_data/`: small published-data files, the source note (`SOURCE.txt`), validation outputs and the tropism file. Committed.
+- `hpa_raw/`: the large Human Protein Atlas file. Not committed (listed in `.gitignore`).
+- `sample_data/`: example outputs and a demo CSV for the upload screen.
+
+**Tests:** `python -m pytest -q`
+
+**Credits and licences:** see `CREDITS.md`.
