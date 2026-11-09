@@ -1,6 +1,6 @@
 # Genesis Twin: API Contract
 
-Version 1.0 | 7 Nov 2026 | Owner: Rakhi (Part A) | Based on Master Project Plan v2.2 | File: `backend/api-contract.md` on branch `rakhi` | Repo: github.com/Saket-Kr07/genesis-twin
+Version 1.1 | 9 Nov 2026 | Owner: Rakhi (Part A) | Based on Master Project Plan v2.2 | File: `backend/api-contract.md` on branch `rakhi` | Repo: github.com/Saket-Kr07/genesis-twin
 
 > Every output of this platform is a simulation for research and education. It is not medical advice, and every screen must say so.
 
@@ -58,18 +58,49 @@ Output: for each organ id, a `score` (0 to 100, higher is healthier) and `vitals
 }
 ```
 
-All 12 organ ids must be present. Vitals per system:
+All 12 organ ids must be present. Every vital has a number (never `null`), except `blood_pressure`, which is a string like `"120/80"`. Scores are integers.
+
+Vitals per organ (v1.1 split: liver biomarkers and gut indicators are separate):
 
 | Organ id | Vitals |
 |---|---|
 | heart | heart_rate, blood_pressure, ejection_fraction |
 | lungs | oxygen_saturation, breathing_rate, lung_capacity |
 | brain | neuro_inflammation_index, reaction_score |
-| liver, stomach, pancreas, intestines | alt, ast, bilirubin, gut_inflammation (liver and gut organs) |
+| liver | alt, ast, bilirubin |
+| stomach, intestines, pancreas | gut_inflammation |
 | kidneys, bladder | egfr, creatinine, hydration |
-| thyroid | glucose, tsh, cortisol (endocrine set) |
+| thyroid | glucose, tsh, cortisol |
 | spleen | white_cell_count, cytokine_level, pathogen_load |
-| reproductive | hormone_indicators |
+| reproductive | hormone_indicators (one number, 0 to 100) |
+
+Units and direction (v1.1). All values are **illustrative demo values, not clinically validated**:
+
+| Vital | Unit / scale | Healthier is |
+|---|---|---|
+| heart_rate | beats per minute | closer to normal |
+| blood_pressure | mmHg, `"systolic/diastolic"` string | closer to normal |
+| ejection_fraction | % | higher |
+| oxygen_saturation | % | higher |
+| breathing_rate | breaths per minute | closer to normal |
+| lung_capacity | litres | higher (demo logic lowers it for female and with age) |
+| neuro_inflammation_index | 0 to 5 index | lower |
+| reaction_score | 0 to 100 | higher |
+| alt, ast | U/L | lower |
+| bilirubin | mg/dL | lower |
+| gut_inflammation | 0 to 10 index | lower |
+| egfr | mL/min/1.73 m² | higher |
+| creatinine | mg/dL | lower |
+| hydration | % | higher |
+| glucose | mg/dL | closer to normal |
+| tsh | mIU/L | closer to normal |
+| cortisol | µg/dL | closer to normal |
+| white_cell_count | ×10⁹/L | closer to normal (about 4 to 11) |
+| cytokine_level | pg/mL | lower |
+| pathogen_load | same units as Part D `load` | lower; 0.0 for a healthy twin (**pending Saket's confirmation**) |
+| hormone_indicators | single number, 0 to 100 | higher |
+
+Input notes: `diet` 5 is the healthiest and 1 the worst (**to be confirmed**). Exercise is days per week. More cigarettes per day means worse results. The API rejects invalid inputs with a 422 before `predict_health` is called, so `predict_health` should raise `ValueError` on bad input and not clamp it. Import path: `from ml.predict import predict_health`. The output must stay exactly as above (no extra keys).
 
 Skeletal and skin values (bone_density, muscle_mass, barrier_health) may be added later; C reads only organ ids and scores.
 
@@ -217,3 +248,4 @@ Fallback if the payment gateway is blocked: a mock checkout endpoint that sets t
 | Date | Change | By |
 |---|---|---|
 | 7 Nov 2026 | v1.0 first version from plan v2.2, Sections 8 and 9 | Rakhi |
+| 9 Nov 2026 | v1.1: `predict_health` vitals split (ALT, AST, bilirubin under liver only; `gut_inflammation` under stomach, intestines, pancreas); added units, direction, no-null and integer-score rules. Agreed with Part B (Ravneet). `pathogen_load` scale pending Saket (Part D). | Rakhi |
