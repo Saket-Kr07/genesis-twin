@@ -7,14 +7,21 @@ Compare two twins (health profiles): overall score, 12 organ scores, shared vita
 """
 import argparse
 import json
-from predict import predict_health, ORGAN_IDS
+try:                                   # works as `ml.twin_comparison` and as a plain script
+    from .predict import predict_health_detailed, ORGAN_IDS
+except ImportError:
+    from predict import predict_health_detailed, ORGAN_IDS
+
+
+def _all_vitals(organ: dict) -> dict:
+    return {**organ["vitals"], **organ.get("extra_vitals", {})}
 
 KEYS = ("age", "sex", "sleep", "exercise", "smoking", "diet")
 
 
 def compare_twins(profile_a: dict, profile_b: dict, name_a="Twin A", name_b="Twin B") -> dict:
-    ra = predict_health(**{k: profile_a[k] for k in KEYS})
-    rb = predict_health(**{k: profile_b[k] for k in KEYS})
+    ra = predict_health_detailed(**{k: profile_a[k] for k in KEYS})
+    rb = predict_health_detailed(**{k: profile_b[k] for k in KEYS})
 
     def row(a, b):
         d = round(b - a, 1)
@@ -24,8 +31,9 @@ def compare_twins(profile_a: dict, profile_b: dict, name_a="Twin A", name_b="Twi
     organs = {o: row(ra["organs"][o]["score"], rb["organs"][o]["score"]) for o in ORGAN_IDS}
     vitals = {}
     for o in ORGAN_IDS:
-        for k, va in ra["organs"][o]["vitals"].items():
-            vb = rb["organs"][o]["vitals"].get(k)
+        vb_all = _all_vitals(rb["organs"][o])
+        for k, va in _all_vitals(ra["organs"][o]).items():
+            vb = vb_all.get(k)
             if vb and isinstance(va["value"], (int, float)) and isinstance(vb["value"], (int, float)):
                 vitals[f"{o}.{k}"] = {name_a: va["value"], name_b: vb["value"],
                                       "difference": round(vb["value"] - va["value"], 2),

@@ -1,75 +1,84 @@
 # Genesis Twin – Part B: Health AI & Personal Twin (`ml/`)
 
-Branch: `Ravneet`. Educational/research use only – **not medical advice**.
+Branch: `Ravneet`. Educational/research use only – **not medical advice**. Implements API contract **v1.1**.
 
 ## Quick start
 ```bash
 pip install -r requirements.txt
-python prepare_data.py     # downloads NHANES 2017-2018 (needs internet) -> data/processed/
+python prepare_data.py     # downloads NHANES 2017-2018 -> data/processed/
 python train_model.py      # trains + saves models/health_model.joblib
-python predict.py          # demo call
-python test_predict.py     # self-check
+python test_predict.py     # self-check (formula fallback + trained model if present)
 ```
-No trained model yet? `predict_health()` automatically uses a **formula baseline** with the identical output format (everything labelled `illustrative`). Check `result["model_info"]["mode"]`: `"ml_model"` or `"formula_baseline"`.
+Backend import: `from ml.predict import predict_health` (run from the repo root; `ml/__init__.py` makes `ml` a package).
 
-## API
-```python
-from predict import predict_health
-r = predict_health(age=35, sex="female", sleep=7.5, exercise=150, smoking="never", diet=4)
-r["overall_health"]["score"]            # 0-100
-r["organs"]["heart"]["score"]           # same for all 12 organ IDs
-r["organs"]["heart"]["vitals"]["systolic_bp"]   # {"value":..., "unit":..., "label":...}
-```
-| Input | Meaning |
-|---|---|
-| age | 18–100 |
-| sex | `"male"` / `"female"` |
-| sleep | hours per night |
-| exercise | moderate-equivalent min/week (vigorous ×2) |
-| smoking | `"never"` / `"former"` / `"current"` |
-| diet | 1 (poor) – 5 (excellent), self-rated |
-
-Organ IDs (fixed order in `predict.ORGAN_IDS`): brain, heart, lungs, liver, stomach, intestines, kidneys, bladder, pancreas, spleen, thyroid, reproductive.
-
-## Labels
-| Label | Meaning |
-|---|---|
-| `measured` | value the user typed in (self-reported) |
-| `model_predicted` | estimated by the NHANES-trained model |
-| `illustrative` | rule/formula for demo – not a real measurement |
-
-| Organ | Score source | Vitals |
+## Two functions
+| Function | Used by | Output |
 |---|---|---|
-| heart, liver, kidneys, pancreas | model-predicted biomarkers → reference-range scoring (`illustrative` in baseline mode) | BP/pulse; ALT/AST/bilirubin; creatinine + eGFR (CKD-EPI 2021); glucose/HbA1c |
-| lungs, brain, stomach, intestines, bladder, spleen, thyroid, reproductive | illustrative lifestyle + age rules | lungs SpO₂/resp. rate and thyroid TSH are **illustrative**; brain shows measured sleep; others none |
-| overall | weighted mean of 12 organs | labelled `illustrative` because 8 organs are |
+| `predict_health(age, sex, sleep, exercise, smoking, diet)` | backend (contract v1.1) | exactly 12 organ ids → `{"score": int, "vitals": {...}}`. Nothing else. |
+| `predict_health_detailed(..., use_model=True)` | our scripts, UI badges | overall score, units, provenance labels, notes, model info, disclaimer |
+
+### Contract inputs (`predict_health`)
+| Input | Rule |
+|---|---|
+| age | int 20–80 |
+| sex | `"male"` / `"female"` |
+| sleep | number, 0–24 hours/night |
+| exercise | int 0–7 days/week |
+| smoking | int 0–100 cigarettes/day |
+| diet | int 1–5 (5 = healthiest) |
+
+Invalid input raises `ValueError`; nothing is clamped (bool, str, floats like 2.5, NaN are rejected).
+
+### Conversion to the model's units (assumptions, need team confirmation)
+- `exercise_min_week = days × 30` (`MINUTES_PER_EXERCISE_DAY`; 5 days ≈ the 150 min/week guideline).
+- `smoking`: 0 → never; 1+ → "current" for the ML model, which has **no dose input** (it only knows never/former/current). Quantity therefore enters through documented **illustrative dose rules** (demo values, not medical predictions), with `dose = sqrt(cigarettes/100)` from 0 to 1:
+  - **lungs, reproductive:** lifestyle smoking factor `0.85 − 0.75 × dose` (1/day ≈ 0.78, 10 ≈ 0.61, 20 ≈ 0.51, 40 ≈ 0.38, 100 = 0.10).
+  - **heart:** score = `min(model score, same person as a never-smoker) − 20 × dose` points (`HEART_SMOKING_MAX_PENALTY`). Example (age 40 male): 0/day 99, 10/day 91, 40/day 85, 100/day 77. Heart rate and blood pressure stay as the model predicted; ejection fraction (an illustrative vital derived from the heart score) follows the score. In the detailed output a smoker's heart score is labelled `illustrative` with an `adjustments` entry and a `note`.
+  - liver, kidneys and pancreas are not dose-adjusted.
+- "Former smoker" cannot be expressed in the contract; it exists only in the detailed function.
+
+## Vitals and where each number comes from
+| Organ | Vitals (contract names) | Source |
+|---|---|---|
+| heart | heart_rate, blood_pressure `"sys/dia"` | **model_predicted** (illustrative if no model) |
+| heart | ejection_fraction | illustrative (derived from heart score) |
+| lungs | oxygen_saturation, breathing_rate, lung_capacity (litres; lower for female and with age) | illustrative |
+| brain | neuro_inflammation_index (0–5, lower better), reaction_score (0–100) | illustrative |
+| liver | alt, ast, bilirubin | model_predicted |
+| stomach, intestines, pancreas | gut_inflammation (0–10, lower better) | illustrative |
+| kidneys, bladder | egfr, creatinine | model_predicted (egfr calculated from predicted creatinine, CKD-EPI 2021); same values for both |
+| kidneys, bladder | hydration (%) | illustrative |
+| thyroid | glucose | model_predicted (NHANES fasting glucose) |
+| thyroid | tsh, cortisol | illustrative |
+| spleen | white_cell_count, cytokine_level | illustrative |
+| spleen | pathogen_load | fixed `0.0`: healthy-body day-zero baseline (see below) |
+| reproductive | hormone_indicators (0–100) | illustrative (equals the reproductive score) |
+
+**Illustrative = demo value from a simple rule. Not a medical prediction and not clinically validated.** Scores of brain, lungs, stomach, intestines, bladder, spleen, thyroid and reproductive are illustrative too. Non-contract extras (systolic/diastolic BP, fasting glucose, HbA1c, sleep hours) exist only in the detailed output under `extra_vitals`.
+
+## Pathogen load (agreed with Part D)
+`spleen.pathogen_load` is a **relative** load, not copies/mL: **1.0 = the untreated reference-adult peak**, **0.0 = no or negligible pathogen**. Part B models no infection, so a healthy body always returns the day-zero baseline `0.0` (two-decimal display). Infected values come from Part D's `simulate_pathogen`.
 
 ## NHANES columns (2017-2018, "J" files)
-| Need | File | Column(s) | How it's used |
-|---|---|---|---|
-| age | DEMO_J | `RIDAGEYR` | adults ≥18; 80 = "80 and over" |
-| sex | DEMO_J | `RIAGENDR` | 1 male, 2 female |
-| sleep | SLQ_J | `SLD012` | weekday sleep hours |
-| exercise | PAQ_J | `PAQ650/655/PAD660` (vigorous), `PAQ665/670/PAD675` (moderate) | days × min; vigorous ×2 |
-| smoking | SMQ_J | `SMQ020`, `SMQ040` | never / former / current |
-| diet | DBQ_J | `DBQ700` | `6 − value` so 5 = excellent |
-| BP, pulse | BPX_J | `BPXSY1-4`, `BPXDI1-4`, `BPXPLS` | targets |
-| liver | BIOPRO_J | `LBXSATSI` (ALT), `LBXSASSI` (AST), `LBXSTB` (bilirubin) | targets |
-| kidney | BIOPRO_J | `LBXSCR` | target; eGFR computed |
-| glucose | GLU_J / GHB_J | `LBXGLU` (fasting), `LBXGH` (HbA1c) | targets |
-
-Please double-check variable names against the CDC codebooks (https://wwwn.cdc.gov/nchs/nhanes/) after downloading; if a column errors, that is the first place to look.
+| Need | File | Column(s) |
+|---|---|---|
+| age, sex | DEMO_J | `RIDAGEYR`, `RIAGENDR` |
+| sleep | SLQ_J | `SLD012` |
+| exercise | PAQ_J | `PAQ650/655/PAD660` (vigorous), `PAQ665/670/PAD675` (moderate) |
+| smoking | SMQ_J | `SMQ020`, `SMQ040` |
+| diet | DBQ_J | `DBQ700` (`6 − value`, 5 = excellent) |
+| BP, pulse | BPX_J | `BPXSY1-4`, `BPXDI1-4`, `BPXPLS` |
+| liver, kidney | BIOPRO_J | `LBXSATSI`, `LBXSASSI`, `LBXSTB`, `LBXSCR` |
+| glucose | GLU_J / GHB_J | `LBXGLU`, `LBXGH` |
 
 ## Honest limitations
-- Lifestyle explains only a small part of blood-test variation, so expect modest R² in `train_model.py`; predictions regress toward typical values. Report the printed metrics.
-- NHANES here has no SpO₂, TSH (this cycle), or data for 8 of the organs → illustrative only.
-- Exercise counts recreational activity only; NHANES survey weights are not used.
+- Lifestyle explains little of blood-test variation → modest R²; report the metrics printed by `train_model.py`.
+- NHANES here has no SpO₂, TSH or data for 8 of the organs → illustrative only.
+- Exercise = recreational activity only; no survey weights; NHANES caps age at 80.
 - Reference ranges in `predict.RANGES` are rough teaching thresholds, not diagnostic cut-offs.
-
-## Notes
-- Your venv can live inside `ml/` (it is git-ignored). Only 6 packages are needed; see `requirements.txt`.
-- Works on Python 3.9+.
+- If `health_model.joblib` is missing or cannot be loaded (e.g. scikit-learn version mismatch), a formula baseline is used and a `RuntimeWarning` is raised; everything is then labelled `illustrative`.
 
 ## Other scripts
-- `age_progression.py` – age 20→80, lifestyle fixed; `--csv`, `--json`, `--plot`.
-- `twin_comparison.py` – `compare_twins(a, b)`: overall, 12 organ and shared-vital differences.
+- `age_progression.py` – age 20→80, lifestyle fixed (uses the detailed function); `--csv`, `--json`, `--plot`.
+- `twin_comparison.py` – `compare_twins(a, b)` (detailed function; minutes/week and smoking categories).
+- `test_predict.py` – existing detailed tests + contract v1.1 tests.

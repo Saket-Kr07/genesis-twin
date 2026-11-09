@@ -8,19 +8,26 @@ Simulate how one twin's health profile changes from age 20 to 80
 import argparse
 import csv
 import json
-from predict import predict_health, ORGAN_IDS
+try:                                   # works as `ml.age_progression` and as a plain script
+    from .predict import predict_health_detailed, ORGAN_IDS
+except ImportError:
+    from predict import predict_health_detailed, ORGAN_IDS
+
+
+def _all_vitals(organ: dict) -> dict:
+    return {**organ["vitals"], **organ.get("extra_vitals", {})}
 
 
 def age_progression(sex, sleep, exercise, smoking, diet, start_age=20, end_age=80, step=5) -> dict:
     timeline = []
     for age in range(start_age, end_age + 1, step):
-        r = predict_health(age, sex, sleep, exercise, smoking, diet)
+        r = predict_health_detailed(age, sex, sleep, exercise, smoking, diet)
         timeline.append({
             "age": age,
             "overall": r["overall_health"]["score"],
             "organs": {o: r["organs"][o]["score"] for o in ORGAN_IDS},
             "vitals": {f"{o}.{k}": v["value"] for o in ORGAN_IDS
-                       for k, v in r["organs"][o]["vitals"].items()},
+                       for k, v in _all_vitals(r["organs"][o]).items()},
             "labels": {o: r["organs"][o]["score_label"] for o in ORGAN_IDS},
         })
     return {"profile": dict(sex=sex, sleep=sleep, exercise=exercise, smoking=smoking, diet=diet),
