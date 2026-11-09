@@ -1,5 +1,5 @@
 """Request and response shapes. They follow backend/api-contract.md exactly."""
-from typing import Dict, Literal
+from typing import Any, Dict, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -56,3 +56,19 @@ class PersonalTwinRequest(BaseModel):
     exercise: int = Field(default=3, ge=0, le=7)
     smoking: int = Field(default=0, ge=0, le=100)
     diet: int = Field(default=3, ge=1, le=5)
+
+
+class ExperimentCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    pathogen_id: Optional[str] = Field(default=None, max_length=100)
+    parameters: Dict[str, Any] = Field(default_factory=dict)
+    seed: Optional[int] = Field(default=None, ge=0, le=2_147_483_647)
+    fork_of: Optional[int] = None
+
+
+class ExperimentFork(BaseModel):
+    """Everything is optional: a fork copies the original unless you override it."""
+
+    name: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    parameters: Optional[Dict[str, Any]] = None
+    seed: Optional[int] = Field(default=None, ge=0, le=2_147_483_647)

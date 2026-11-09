@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Query
 
-from .. import config, dummy
+from .. import config, functions
 from ..deps import get_optional_user, is_pro
 
 router = APIRouter(prefix="/research", tags=["research"])
@@ -18,4 +18,4 @@ def sources(
         count = limit or 100
     else:
         count = min(limit or config.PUBLIC_SOURCES_LIMIT, config.PUBLIC_SOURCES_LIMIT)
-    return dummy.get_sources(count)
+    return functions.get_sources(count)

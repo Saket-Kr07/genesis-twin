@@ -92,13 +92,14 @@ def _vitals(organ: str, score: int, age: int, sex: str) -> dict:
             "neuro_inflammation_index": round(0.5 + d * 4.5, 1),
             "reaction_score": round(95 - d * 40 - older * 0.2),
         }
-    if organ in ("liver", "stomach", "pancreas", "intestines"):
+    if organ == "liver":
         return {
             "alt": round(20 + d * 60),
             "ast": round(22 + d * 55),
             "bilirubin": round(0.6 + d * 1.2, 1),
-            "gut_inflammation": round(1 + d * 6, 1),
         }
+    if organ in ("stomach", "pancreas", "intestines"):
+        return {"gut_inflammation": round(1 + d * 6, 1)}
     if organ in ("kidneys", "bladder"):
         return {
             "egfr": round(112 - d * 50 - older * 0.6),

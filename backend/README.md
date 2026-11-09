@@ -29,8 +29,15 @@ Creates `pro@genesis.test` and `admin@genesis.test` (password printed by the scr
 pytest
 ```
 
-## Swapping dummy functions for real ones (Day 2)
+## Day 2 additions
 
-All dummy functions live in `app/dummy.py`. Replace each one with the real function:
+- Experiments (Pro): `POST/GET /experiments`, `GET /experiments/{id}`, `POST /experiments/{id}/fork`, `GET /experiments/{id}/export`
+- Uploads (Pro): `POST/GET /uploads`, `GET/DELETE /uploads/{id}`
+- `GET /health/functions` shows which functions are real and which are still dummy
+- Everything in Docker: from the repo root run `docker compose up --build`
+
+## Swapping dummy functions for real ones
+
+`app/functions.py` tries the real module first and falls back to `app/dummy.py`. Put the real import paths in `CANDIDATES` there:
 `predict_health` (ml/), `simulate_pathogen` and `fit_pathogen` (simulation/), `get_sources` (research/).
 The input and output shapes must stay the same as in `api-contract.md`.

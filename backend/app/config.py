@@ -20,3 +20,11 @@ CORS_ORIGINS = [
 
 # Public (not logged in) users see only the latest 5 papers.
 PUBLIC_SOURCES_LIMIT = 5
+
+# Version string saved with every experiment (bump when the real models change).
+MODEL_VERSION = os.getenv("MODEL_VERSION", "v0.1.0")
+
+# Uploads (Pro). Files are stored on disk under UPLOAD_DIR/<user_id>/.
+UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", str(Path(__file__).resolve().parent.parent / "uploads")))
+MAX_UPLOAD_BYTES = int(os.getenv("MAX_UPLOAD_BYTES", str(5_000_000)))
+ALLOWED_UPLOAD_EXTENSIONS = {".csv", ".json", ".txt", ".png", ".jpg", ".jpeg", ".glb"}
