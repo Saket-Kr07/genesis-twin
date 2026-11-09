@@ -10,7 +10,7 @@ from . import config
 from . import models  # noqa: F401  (registers the tables)
 from .db import Base, engine
 from . import functions
-from .routers import auth, body, experiments, pathogens, research, twin, uploads
+from .routers import auth, body, experiments, pathogens, research, twin, uploads, billing, admin
 
 
 @asynccontextmanager
@@ -56,3 +56,5 @@ app.include_router(pathogens.router)
 app.include_router(research.router)
 app.include_router(experiments.router)
 app.include_router(uploads.router)
+app.include_router(billing.router)
+app.include_router(admin.router)

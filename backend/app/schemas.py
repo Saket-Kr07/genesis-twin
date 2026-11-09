@@ -43,6 +43,8 @@ class SimulateRequest(BaseModel):
     pathogen_id: str
     day: int = Field(ge=0, le=30)
     treatment: float = Field(ge=0, le=1)
+    treatment_start: int = 0
+    profile: Optional[dict] = None
 
 
 class PersonalTwinRequest(BaseModel):

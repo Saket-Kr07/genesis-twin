@@ -183,7 +183,7 @@ def test_uploads_are_private(client):
 
 def test_health_functions_reports_sources(client):
     data = client.get("/health/functions").json()
-    assert set(data) == {"predict_health", "simulate_pathogen", "fit_pathogen", "get_sources"}
+    assert set(data) == {"predict_health", "simulate_pathogen", "simulate_timeline", "list_pathogens", "fit_pathogen", "get_sources"}
     assert all(v == "dummy" or v.startswith("real:") for v in data.values())
 
 

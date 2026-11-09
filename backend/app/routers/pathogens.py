@@ -9,6 +9,27 @@ router = APIRouter(prefix="/pathogens", tags=["pathogens"])
 MAX_UPLOAD_BYTES = 1_000_000
 
 
+def _authorise(pathogen_id, user):
+    """404 for an unknown id. Presets are public; everything else needs Pro."""
+    info = functions.get_pathogen(pathogen_id)
+    if info is None:
+        raise HTTPException(status_code=404, detail="Pathogen not found.")
+    if not info["preset"] and not is_pro(user):
+        if user is None:
+            raise HTTPException(status_code=401, detail="Please log in to use this feature.")
+        raise HTTPException(status_code=403, detail="This feature needs a Professional subscription.")
+
+
+def _run(call, *args):
+    """Plain-language errors from the simulation (bad profile, bad input) become 400."""
+    try:
+        return call(*args)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err))
+    except RuntimeError as err:
+        raise HTTPException(status_code=503, detail=str(err))
+
+
 @router.get("")
 def list_pathogens(user=Depends(get_optional_user)):
     """Public: the 3 presets. Pro: the full library."""
@@ -36,12 +57,26 @@ async def upload(file: UploadFile = File(...), user=Depends(require_role("pro"))
 
 @router.post("/simulate")
 def simulate(body: SimulateRequest, user=Depends(get_optional_user)):
-    """Public for presets, Pro for everything else."""
-    info = functions.get_pathogen(body.pathogen_id)
-    if info is None:
-        raise HTTPException(status_code=404, detail="Pathogen not found.")
-    if not info["preset"] and not is_pro(user):
-        if user is None:
-            raise HTTPException(status_code=401, detail="Please log in to use this feature.")
-        raise HTTPException(status_code=403, detail="This feature needs a Professional subscription.")
-    return functions.simulate_pathogen(body.pathogen_id, body.day, body.treatment)
+    """Public for presets, Pro for everything else. Optional: treatment_start, profile."""
+    _authorise(body.pathogen_id, user)
+    return _run(
+        functions.simulate_pathogen,
+        body.pathogen_id,
+        body.day,
+        body.treatment,
+        getattr(body, "treatment_start", 0),
+        getattr(body, "profile", None),
+    )
+
+
+@router.post("/timeline")
+def timeline(body: SimulateRequest, user=Depends(get_optional_user)):
+    """All days in one call, for the day slider. Same access rules as /simulate."""
+    _authorise(body.pathogen_id, user)
+    return _run(
+        functions.simulate_timeline,
+        body.pathogen_id,
+        body.treatment,
+        getattr(body, "treatment_start", 0),
+        getattr(body, "profile", None),
+    )
