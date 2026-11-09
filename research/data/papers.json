@@ -1,0 +1,228 @@
+[
+    {
+        "title": "Digital twins in precision pharmacotherapy: emerging applications, challenges, and future directions.",
+        "doi": "10.3389/fdgth.2026.1881217",
+        "date": "2026-08-18",
+        "abstract": "Digital twin technology, defined as dynamic digital models that represent individual patients, is emerging as a promising paradigm in precision pharmacotherapy. The integration of pharmacokinetic and pharmacodynamic (PK/PD) modeling, clinical data, genomic information, and real-time patient monitoring enables digital twins to shift drug therapy away from population-based averages toward individualized, adaptive decisions. This narrative review explores conceptual frameworks, emerging applications, methodological approaches, clinical value, limitations, and future directions of digital twins in pharmacotherapy, with particular emphasis on the role of clinical pharmacists. Unlike broader digital twin reviews that primarily emphasize technical architectures, disease-specific applications, or pharmaceutical research and development, this review focuses on the clinical-pharmacy translation layer: how digital twin outputs can be interpreted, validated, communicated, and converted into actionable medication decisions at the bedside and across ambulatory care settings. Key applications include precision dosing, polypharmacy management, antimicrobial stewardship, and the optimization of complex therapies, alongside important ethical, regulatory, and implementation challenges.",
+        "type": [
+            "review-article",
+            "Review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Digital Twin-Enabled Vehicle Routing in Logistics and Transportation",
+        "doi": "",
+        "date": "2026-09-22",
+        "abstract": "",
+        "type": [
+            "review-article",
+            "Review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Sex-specific assumptions underlie cardiovascular digital twin technologies: A narrative review.",
+        "doi": "10.1371/journal.pdig.0001692",
+        "date": "2026-08-31",
+        "abstract": "Digital twin technologies (DTTs) are increasingly applied in cardiovascular medicine to support personalized treatment. At the same time, growing evidence demonstrates sex differences in cardiovascular anatomy, physiology, disease presentation, and outcomes. Whether current cardiovascular DTTs adequately incorporate these sex-specific characteristics is unclear. This narrative review examines how sex bias and inclusivity are addressed within cardiovascular DTTs and identifies where sex-related bias may arise within different components of DTT. A six-dimensional digital twin framework is introduced to review DTTs. We focus on three cardiovascular domains: coronary artery disease, aortic valve stenosis, and atrial fibrillation. For each domain, we assessed sex representation in modeling assumptions, data interpretation, clinical outputs, and validation studies. Within three domains, physiological assumptions, boundary conditions, interpretation thresholds, and validation cohorts, models are frequently derived from sex-skewed populations. DTTs estimating noninvasive fractional flow reserve are predominantly validated in male-dominated cohorts, potentially resulting in lower precision in women. In contrast, validation studies for DTTs in TAVI planning show variable sex distributions, with some cohorts being female-skewed and others male-skewed, raising questions about their generalizability across sexes. In both model-based DTTs, sex bias may arise from generalized boundary conditions. Electro-anatomical mapping systems for atrial fibrillation are susceptible to sex bias within measurement methodology. Uniform clinical thresholding and outcome selection bias further add to sex-bias in DTTs. Current cardiovascular DTTs insufficiently account for sex-specific cardiovascular characteristics, risking underperformance in underrepresented populations. Incorporating sex-aware physiological parameters, sex-stratified validation, balanced datasets, and transparent reporting should be considered minimal standards for future clinical implementation.",
+        "type": [
+            "review-article",
+            "Review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Accelerating cardiovascular digital twin creation using precomputed virtual populations as Bayesian priors",
+        "doi": "",
+        "date": "2026-10-16",
+        "abstract": "",
+        "type": [
+            "research-article",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Optical digital twins for disease prevention, diagnosis, therapy, and intervention.",
+        "doi": "10.1117/1.jbo.31.8.080601",
+        "date": "2026-08-05",
+        "abstract": "<h4>Significance</h4>Digital twins are transitioning from conceptual models to operational frameworks that link measurement, prediction, and intervention in biomedicine. However, most biomedical digital twin efforts remain fragmented, with limited integration across biological scales, sensing modalities, and clinical decision points. Biophotonics provides a uniquely suited measurement foundation for biomedical digital twins by enabling quantitative, physics-grounded, and longitudinal noninvasive measurements spanning molecular, cellular, tissue, organ, and whole-body scales. These capabilities position photonics as a foundational measurement layer for next-generation biomedical digital twins.<h4>Aim</h4>To synthesize current advances and future opportunities in optical digital twins and to establish a unifying framework for how photonic sensing can support digital twin architectures for disease diagnosis, therapy guidance, prevention, continuous monitoring, and interventional healthcare.<h4>Approach</h4>This white paper summarizes perspectives presented at the annual meeting of the international society for optics and photonics (SPIE Photonics West), in the session \"Digital Twins as New Approach Methodologies (NAMs) in Biophotonics.\" We review five complementary implementations of the digital twin paradigm: (i) virtual tissue staining for histopathology, which combines label-free optical imaging with machine learning-based inference to generate clinically interpretable representations with uncertainty quantification and validation; (ii) cell-level metabolic digital twins that use autofluorescence and redox imaging to predict patient-specific therapeutic responses in tumor organoids and immune cells under controlled perturbations; (iii) therapeutic digital twin frameworks for radiation therapy, in which Cherenkov imaging and radiation chemistry sensing verify treatment delivery and enable biophysical model correction and personalization; (iv) personalized optical digital twins for continuous monitoring that integrate longitudinal photonic sensing with physiological and contextual data to support early detection, prevention, and adaptive care; and (v) personalized digital twins for interventional healthcare.<h4>Results</h4>Across these diverse applications, a common digital twin architecture emerges. Optical measurements define patient state, inference models translate measurements into predictions, therapeutic interventions perturb the system, verification measurements constrain and validate execution, and longitudinal sensing continuously updates the twin over time. The reviewed examples demonstrate that optical measurements can serve as a scalable and biologically relevant data layer linking prediction and intervention across multiple levels of biological organization.<h4>Conclusions</h4>Optical digital twins are no longer merely a conceptual aspiration but are emerging as a practical, measurement-driven infrastructure for precision medicine. The primary challenge is no longer feasibility, but rather the integration, interoperability, validation, and uncertainty quantification of digital twin systems capable of operating safely and at scale. Advances in photonic sensing, computational modeling, and clinical translation position optical digital twins to support real-time, patient-specific clinical decision-making across diagnosis, treatment, monitoring, and prevention.",
+        "type": [
+            "research-article",
+            "Review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "A digital twin for tracking and forecasting glycemia with septic patients in ICUs.",
+        "doi": "10.1038/s44324-026-00132-2",
+        "date": "2026-10-01",
+        "abstract": "We present a digital twin framework for real-time glucose monitoring and forecasting in septic patients admitted to intensive care units (ICUs). The framework integrates advanced machine learning models trained on continuous glucose measurements with a dynamic digital twin workflow that enables rapid deployment to individual patients, ongoing model assessment, updating with newly acquired data, and personalized predictive decision support. Built on a foundation model-a pretrained time-series transformer-the digital twin adapts as new patient data become available and generates rolling near-term glucose forecasts in real time. To evaluate adaptability and computational efficiency, we deployed the pretrained model to ten septic patients and compared multiple personalization strategies, including zero-shot inference, linear probing, full fine-tuning, and staged fine-tuning. The results show that the model can be initialized and personalized for a new patient within seconds on a standard laptop while maintaining accurate glucose forecasts across varying data conditions. These findings demonstrate the feasibility of real-time digital twin personalization in resource-constrained, high-acuity clinical environments and highlight the potential of digital twins as scalable, AI-enabled platforms for continuous physiological monitoring, clinical decision support, and individualized treatment design in the ICU.",
+        "type": [
+            "research-article",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Hybrid Digital Twin Framework for Personalized Diabetes Management Using Mathematical Modelling and Machine Learning.",
+        "doi": "10.3390/diagnostics16172813",
+        "date": "2026-09-01",
+        "abstract": "<b>Background/Objectives</b>: Diabetes mellitus is a chronic metabolic disorder characterized by impaired regulation of blood glucose due to defects in insulin secretion, insulin action, or both. Physiological and lifestyle factors vary among individuals. General medicine is not applicable to all patients. In this scenario, personalized medicine for each individual becomes costly. Effective management of continuous glucose levels with accurate insulin dosage is challenging. To overcome this, a digital twin (DT)-based insulin dosage simulator with an individual's metabolic system is proposed in this work. <b>Methods</b>: Various machine learning techniques, mathematical models of physiology, and risk assessment using probability are used to predict the dynamics of patient-specific glucose-insulin. Parameters such as carbohydrate intake, sleep patterns, medications, and physical activity were incorporated into this model to capture real-world variations in daily life. For glucose-insulin interactions, the Bergman Minimal Model (BMM) is used; for time-of-day variability, a circadian insulin sensitivity model is used; and for predicting metabolic risks, Bayesian risk estimation (BRE) is used, which includes hyperglycemia risk. To enhance transparency and interpret model predictions, explainable artificial intelligence (XAI) methods are employed. <b>Results</b>: The simulation results showed improved glucose prediction accuracy, enhanced detection of hypoglycemia risk, and optimized insulin dosing strategies compared with traditional approaches. <b>Conclusions</b>: Overall, the proposed digital twin model offers a scalable solution using the latest techniques A \"Prescriptive Analytical Framework\" is provided using the BMM and BRE for personalized diabetes management and decision support for clinicians.",
+        "type": [
+            "research-article",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Beyond benchmarks: a narrative review of evolving quality of life frameworks for children with neurodevelopmental and learning disabilities and the need for integrated digital twin approaches",
+        "doi": "",
+        "date": "2026-10-16",
+        "abstract": "",
+        "type": [
+            "review-article",
+            "Review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Blockchain-enabled digital twin systems in healthcare: a systematic scoping review of architectural integration, privacy, governance, ethical challenges, and regulatory solutions under GDPR and HIPAA.",
+        "doi": "10.3389/fdgth.2026.1898383",
+        "date": "2026-08-12",
+        "abstract": "<h4>Background and objective</h4>The integration of blockchain and digital twin (DT) technologies is increasingly recognised as a promising approach for improving healthcare data integrity, interoperability, privacy, and clinical decision support. While digital twins enable dynamic patient modelling and predictive healthcare applications, blockchain provides secure data governance through decentralised trust, auditability, and access control. However, existing research remains fragmented, with limited synthesis of the architectural integration, regulatory readiness, ethical governance, and interoperability of blockchain-enabled healthcare digital twin systems. This systematic scoping review addresses these gaps by providing a comprehensive architectural and compliance-oriented analysis of the current evidence.<h4>Methods</h4>A systematic scoping review was conducted following PRISMA 2020 guidelines using Scopus, PubMed, and Web of Science. From 148 identified records, 55 eligible studies published between 2020 and 2025 were included after duplicate removal and eligibility screening. Data were extracted on digital twin functionality, blockchain architecture, healthcare application domains, consensus mechanisms, privacy-preserving strategies, and regulatory and ethical alignment. Structured Python-based visual mapping and comparative analyses were performed to identify architectural, governance, and compliance patterns across the literature.<h4>Results</h4>The findings demonstrate that blockchain is predominantly employed to provide access control, audit logging, data integrity, consent management, and secure data provenance within healthcare digital twin ecosystems. Patient-level and EHR-centred digital twins represented the most mature application areas, whereas cross-domain and infrastructure-level frameworks dominated early architectural exploration. The review identifies recurring compliance-oriented architectural patterns while revealing substantial gaps in clinically validated deployments, interoperability with established healthcare standards, decentralised governance models, and formal implementation of GDPR- and HIPAA-compliant engineering practices. Comparative heatmap analyses further highlight the uneven maturity of ethical governance and regulatory integration across blockchain functionalities.<h4>Conclusion</h4>This review provides the first comprehensive compliance-oriented architectural synthesis of blockchain-enabled healthcare digital twin systems by integrating technical architecture, regulatory readiness, ethical governance, and privacy-preserving design patterns within a unified analytical framework. The proposed architectural mapping identifies critical research gaps in interoperability, governance engineering, consensus optimisation, and real-world clinical validation, providing a foundation for the development of trustworthy, GDPR/HIPAA-aligned, FHIR-compatible, and clinically interoperable healthcare digital twin ecosystems.",
+        "type": [
+            "Systematic Review",
+            "systematic-review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Digital twin for neurological conditions: a systematic scoping review.",
+        "doi": "10.1007/s13534-026-00605-9",
+        "date": "2026-08-01",
+        "abstract": "Digital twin technology has emerged as a promising approach for advancing precision medicine in complex diseases, particularly in neurology. This scoping review aimed to systematically map the current literature on digital twin applications in neurological conditions, focusing on study characteristics, modeling approaches, data sources, and clinical applications. A comprehensive search across six databases from inception to February 2026 identified 36 studies that met the inclusion criteria. The findings demonstrated a rapid increase in publications since 2023, with Alzheimer's disease (<i>n</i> = 14) and stroke (<i>n</i> = 12) representing the most frequently studied conditions. Data-driven and machine learning-based models were the most common approaches, followed by mechanistic and hybrid models. Major application domains included clinical trial optimization, disease progression modeling, risk prediction, and personalized treatment. However, most studies were proof-of-concept or retrospective in design, with limited external validation and no randomized controlled trials identified. Additionally, many models lacked continuous real-time data integration, indicating that few met the criteria of fully dynamic digital twins. These findings suggest that while digital twins hold substantial potential to transform precision neurology, significant challenges remain in terms of methodological rigor, standardization, and clinical translation. Future research should prioritize prospective validation, integration of multimodal real-world data, and the development of standardized frameworks to support safe and effective implementation.",
+        "type": [
+            "review-article",
+            "Review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "A digital twin approach for transforming prescription drug labeling.",
+        "doi": "10.3389/fphar.2026.1717309",
+        "date": "2026-04-10",
+        "abstract": "Drug development entails extensive data collection by sponsors throughout research and development, followed by regulatory review, culminating in essential yet static prescription drug labeling. As study results are typically presented as isolated summaries, the label can underrepresent the drug's integrated effects across biological systems. We propose that sponsors submit a Digital Twin-based companion app alongside traditional documentation to enable a more comprehensive understanding of the investigational drug for review and, after approval, to support personalized prescribing in clinical practice. The development and implementation of the companion app would proceed by aligning with emerging regulatory guidance and by leveraging robust, scalable technical architecture.",
+        "type": [
+            "brief-report",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "PerioTwin-DeltaCRED: a validation-aware physiological digital twin for longitudinal periodontal treatment response prediction",
+        "doi": "",
+        "date": "2026-09-26",
+        "abstract": "",
+        "type": [
+            "research-article",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Utilising the digital twin for disease prevention, treatment and in silico research.",
+        "doi": "10.1136/bmjdh-2026-000031",
+        "date": "2026-06-12",
+        "abstract": "",
+        "type": [
+            "Editorial"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "Clinical applications of digital twin technology in In Vitro Fertilisation.",
+        "doi": "10.1016/j.jogoh.2026.103235",
+        "date": "2026-06-26",
+        "abstract": "<h4>Background</h4>Digital twin technology, originating from aerospace and manufacturing industries, has emerged as a transformative tool in healthcare. In vitro fertilisation (IVF) faces persistent challenges including suboptimal embryo selection, unpredictable treatment outcomes, and limited personalisation of protocols. Despite advances in assisted reproductive technology, existing literature exhibits fragmentation: artificial intelligence applications in embryo selection, ovarian stimulation, and endometrial assessment have been developed independently without systematic integration into comprehensive treatment frameworks. Digital twin technology offers unprecedented opportunities to create virtual replicas of biological systems, enabling real-time monitoring, predictive modelling, and personalised treatment strategies.<h4>Aim</h4>This narrative review aims to critically examine the current applications of digital twin technology in IVF, evaluate its potential benefits and limitations, synthesize existing evidence into an integrative conceptual model, and identify future directions for implementation in reproductive medicine.<h4>Method</h4>A comprehensive narrative review was conducted using PubMed, Scopus, Web of Science, and IEEE Xplore databases. A narrative review approach was selected over systematic review to accommodate the heterogeneity of evidence types in this emerging field, including theoretical frameworks, simulation studies, and proof-of-concept implementations that would be excluded from systematic reviews. Search terms included \"digital twin,\" \"IVF,\" \"in vitro fertilisation,\" \"assisted reproductive technology,\" \"embryo selection,\" and \"predictive modelling.\" Studies published between 2015 and 2025 were included, focusing on original research articles, systematic reviews, and proof-of-concept studies describing digital twin applications in reproductive medicine.<h4>Results</h4>Digital twin technology in IVF demonstrates significant potential across multiple domains including embryo development simulation, ovarian response prediction, endometrial receptivity modelling, and personalised stimulation protocols. Current applications integrate artificial intelligence, machine learning algorithms, time-lapse imaging, and omics data to create comprehensive virtual models. Early evidence suggests improvements in embryo selection accuracy, ovarian response prediction, and treatment protocol optimization, though large-scale randomized controlled trials remain limited. Implementation challenges include data integration complexity, computational requirements, regulatory considerations, and validation requirements.<h4>Conclusion</h4>Digital twin technology represents a paradigm shift in IVF practice, offering personalised, predictive, and precision medicine approaches. This review synthesizes existing evidence to propose an integrative conceptual model for digital twin implementation across the IVF treatment spectrum, identifies critical knowledge gaps, and establishes research priorities to advance clinical translation. Despite current limitations, continued advancement promises improved success rates and patient outcomes.",
+        "type": [
+            "Review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "An Architecture for a Human Digital Twin from Longitudinal Data at Healthcare System Scale",
+        "doi": "10.20944/preprints202609.0457.v1",
+        "date": "2026-09-07",
+        "abstract": "A human digital twin (HDT) is a model of an individual patient that is personalised to their data, updated as new observations arrive, and predictive of their future clinical states. At longitudinal, healthcare-system scale such a system could forecast how a patient develops under alternative treatments before one is chosen. Here we set out a proposed architecture for building a HDT, and the evidence standard it would have to meet. Recent advances in electronic health record (EHR) foundation models still fall short of the bidirectionality paradigm that distinguishes a twin from a digital shadow, and we locate that shortfall in three gaps: no persistent patient-specific state, no causal identification for the counterfactuals they generate, and erosion of the outcome signal once the model is deployed. We propose three co-designed layers addressing each in turn: an intervention-conditional population model exposing a queryable latent state, an agentic personalisation layer holding per-patient memory, and a causal-validity layer that pre-specifies estimands and predictimands. Robust evaluation of a HDT, we argue, will likely require \"silent-mode\" assessment followed by a cluster-randomised trials with clinical endpoints. The HDT that earns the name will be the first to show all three layers working together on real patients, evaluated to the rigour a randomised trial imposes.",
+        "type": [
+            "Preprint"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "A Digital Twin Prototype for Protecting Surface Source Waters",
+        "doi": "",
+        "date": "2026-09-29",
+        "abstract": "",
+        "type": [
+            "research-article",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "A pilot-wellness-informed ecological framework for human-autonomy teaming in future fighter aviation.",
+        "doi": "10.3389/fphys.2026.1913172",
+        "date": "2026-09-30",
+        "abstract": "Future fighter operations are expected to combine increasingly capable autonomy, collaborative aircraft, dense sensor information, and sustained physiological and cognitive demands. This Perspective proposes a pilot-wellness-informed ecological framework in which the pilot, a pilot-specific digital twin, an intelligent flight-management system, the aircraft, and external agents are treated as interdependent elements within a systems-of-systems framework. The framework does not replace situation awareness, distributed cognition, joint cognitive systems, adaptive automation, or human-autonomy teaming. Instead, it extends their unit of analysis by making the pilot's dynamic physiological and neurocognitive state, longitudinal variability, and health-related constraints explicit system variables and design objectives. The pilot digital twin is defined narrowly as an individualized state-estimation and forecasting capability, whereas the intelligent flight-management system integrates pilot, platform, mission, and environmental information to provide explainable recommendations and, where authorized, bounded adaptive action. We identify testable propositions concerning individualized prediction, adaptive support, shared situation awareness, trust calibration, and governance. The framework is prospective and requires validation in simulation, training, and operationally representative environments. Its purpose is to organize research toward systems that protect pilot agency, sustain performance, and preserve long-term health while exploiting increasingly autonomous teammates.",
+        "type": [
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "From virtual pregnancy to digital twin obstetrics: multimodal data integration for personalized prediction of pregnancy complications.",
+        "doi": "10.3389/fmed.2026.1867368",
+        "date": "2026-06-18",
+        "abstract": "Pregnancy complications, including preeclampsia, gestational diabetes mellitus, preterm birth, fetal growth restriction, and placental insufficiency, remain major contributors to maternal and neonatal morbidity worldwide. Conventional prediction models in obstetrics have traditionally relied on static clinical variables collected at discrete gestational time points. Although these approaches are clinically convenient, they are insufficient to capture the dynamic, heterogeneous, and nonlinear nature of pregnancy physiology. Recent advances in computational modeling, artificial intelligence, biomedical data acquisition, and continuous physiological monitoring have introduced the concepts of virtual pregnancy and digital twin obstetrics. Virtual pregnancy modelsaim to simulate maternal-placental-fetal interactions through mechanistic or computational frameworks, whereas digital twins aim to extend this concept by integrating real-time multimodal data streams to construct continuously updated, patient-specific models. This review discusses the conceptual transition from virtual pregnancy to digital twin obstetrics and examines how multimodal data integration can support personalized prediction of pregnancy complications. Particular attention is given to clinical phenotyping, obstetric imaging, radiomics, multi-omics data, wearable-derived physiological monitoring, and machine learning-based modeling strategies. The review further evaluates potential applications in preeclampsia, gestational diabetes mellitus, preterm birth, fetal growth restriction, and placental dysfunction. Although digital twin obstetrics represents a promising but still largely conceptual framework for precision maternal-fetal medicine, major challenges remain, including data heterogeneity, limited external validation, model interpretability, ethical governance, privacy protection, and clinical implementation. Future work should prioritize standardized data infrastructures, prospective multicenter validation, explainable artificial intelligence, and clinically interpretable decision-support systems.",
+        "type": [
+            "review-article",
+            "Review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "An intelligent digital twin framework with AI-driven optimization for patient flow and clinical scheduling in smart healthcare systems.",
+        "doi": "10.3389/fdgth.2026.1835028",
+        "date": "2026-07-15",
+        "abstract": "The operation of the emergency departments at hospitals can be faced with many operational difficulties due to their unpredictable nature, resource scarcity, and increased pressure on services. In this paper, we propose a multi-level AI-enhanced digital twin framework to analyze the patterns of patient flow and clinical scheduling through a case study conducted with the help of three real-life datasets. Our framework incorporates three levels, namely temporal forecasting, clinical robustness, and outcome grounding, to generate an indication about hospital dynamics from real-life datasets. Temporal intelligence level incorporates an LSTM-based model that has shown competitive prediction performance (R² = 0.6785, MAE = 0.0895, RMSE = 0.1103). In addition, our clinical robustness level uses a triage dataset consisting of 560k records to generate an understanding of congestion pattern based on acuity and reveals that maximum congestion is observed at times ranging from 11:00 to 14:00 caused mainly by moderate-acuity patients (ESI-3). Results Layer. The results layer demonstrates the effect of the model, which shows that the mean waiting time is about 35 min. In addition, there is a negative association between the two variables-waiting time and patient satisfaction. Trend analysis across datasets reveals similarities in temporal trends, implying that the developed framework reflects representative features of the hospital environment. Generally, this study emphasizes the importance of incorporating AI-enabled predictions and digital twin models to aid decision-making concerning the analysis of patients' flow and assessment of scheduling policies.",
+        "type": [
+            "research-article",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    },
+    {
+        "title": "AI digital-twin ecosystem translating gut-microbiome-neuroimmune signals into precision sleep-mood interventions.",
+        "doi": "10.3389/fpsyt.2026.1703605",
+        "date": "2026-04-15",
+        "abstract": "We present a novel AI-powered \"gut-brain-sleep\" digital-twin nursing ecosystem (G-B-S DT-N) that translates microbiome and neuroimmune signals into precision interventions for sleep and mood disorders. The ecosystem integrates four key layers: Microbiome Dynamics, Neuro-immune Interface, Sleep-Cognition-Emotion Circuits, and Person-Nurse-Environment Triad. These layers leverage multi-omics data, EEG sleep microstructure, real-time sensors, and EMR feeds to create a dynamic, patient-specific architecture. Uncertainty-aware explainable AI (XAI) modules ensure privacy and interpretability, enabling causal inference through advanced machine learning techniques. Adaptive care pathways, including precision pre-/post-biotic delivery and circadian light prescriptions, are optimized via nurse-in-the-loop reinforcement learning. The digital twin is operationalized through a five-step closed-loop workflow in hospital and community settings. Quantum-accelerated simulations and a proposed RCT (D-TWIN-RCT) will assess efficacy compared to standard care. Social, legal, and ethical frameworks protect data sovereignty and autonomy. This ecosystem offers a scalable solution for managing complex comorbidities, positioning nursing as a key driver of microbiome-precision medicine.",
+        "type": [
+            "review-article",
+            "Review",
+            "Journal Article"
+        ],
+        "isPreprint": false
+    }
+]
