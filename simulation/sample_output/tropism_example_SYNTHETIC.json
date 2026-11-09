@@ -1,0 +1,58 @@
+{
+ "tropism": {
+  "brain": 0.05,
+  "heart": 0.05,
+  "lungs": 0.9,
+  "liver": 0.0,
+  "stomach": 0.05,
+  "intestines": 0.3,
+  "kidneys": 0.3,
+  "bladder": 0.05,
+  "pancreas": 0.05,
+  "spleen": 0.05,
+  "thyroid": 0.05,
+  "reproductive": 0.05
+ },
+ "organs_from_data": [
+  "lungs",
+  "liver",
+  "intestines",
+  "kidneys"
+ ],
+ "no_data_organs": [
+  "brain",
+  "heart",
+  "stomach",
+  "bladder",
+  "pancreas",
+  "spleen",
+  "thyroid",
+  "reproductive"
+ ],
+ "unmapped_tissues": [
+  "skeletal muscle"
+ ],
+ "evidence": {
+  "lungs": {
+   "tissue": "lung",
+   "value": "High",
+   "tropism": 0.9
+  },
+  "intestines": {
+   "tissue": "small intestine",
+   "value": "Low",
+   "tropism": 0.3
+  },
+  "kidneys": {
+   "tissue": "kidney",
+   "value": "Low",
+   "tropism": 0.3
+  },
+  "liver": {
+   "tissue": "liver",
+   "value": "Not detected",
+   "tropism": 0.0
+  }
+ },
+ "source": "SYNTHETIC example, not real Human Protein Atlas data"
+}

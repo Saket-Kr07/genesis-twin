@@ -1,0 +1,13 @@
+{
+ "parameters": null,
+ "validation_errors": [
+  "Row 3: load cannot be negative.",
+  "Row 4: load is missing.",
+  "Row 5: load must be a number (found 'abc')."
+ ],
+ "warnings": [],
+ "fit": null,
+ "fitted_curve": [],
+ "target_organs": [],
+ "unrecognised_tissues": []
+}

@@ -1,0 +1,21 @@
+{
+ "profile": {
+  "sex": "female",
+  "age": 8.0,
+  "height_cm": 128.0,
+  "weight_kg": 26.0,
+  "baseline_vitals": {
+   "heart_rate": 92.0,
+   "breathing_rate": 22.0
+  }
+ },
+ "bmi": 15.9,
+ "age_group": "child",
+ "effects": [
+  "Age 8: higher resting heart and breathing rate, lower blood pressure, lung capacity scaled to height.",
+  "Female: resting heart rate about 4% higher and lung capacity about 20% lower than a male of the same height.",
+  "Lung capacity scaled to height (128 cm).",
+  "BMI effects are not applied under 18 (children need growth charts).",
+  "Resting heart rate and breathing rate set from the face scan (webcam estimates, not measurements)."
+ ]
+}

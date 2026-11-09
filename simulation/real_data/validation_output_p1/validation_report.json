@@ -1,0 +1,95 @@
+{
+ "ok": true,
+ "label": "Viloria Winnett et al 2022, Caltech COVID-19 Study, CaltechDATA DOI 10.22002/D1.20049, participant 1",
+ "pathogen_id": "respiratory_virus",
+ "preset_name": "Sample respiratory virus",
+ "points": 37,
+ "log10": false,
+ "tolerance": 0.3,
+ "published_fit": {
+  "r_squared": 0.9751,
+  "warnings": [],
+  "parameters": {
+   "growth_rate": {
+    "value": 4.3436,
+    "low": 2.4298,
+    "high": 6.2574
+   },
+   "decay_rate": {
+    "value": 4.2039,
+    "low": 1.5104,
+    "high": 6.8974
+   },
+   "peak_day": {
+    "value": 3.5303,
+    "low": 3.2497,
+    "high": 3.8109
+   },
+   "peak_load": {
+    "value": 1445443300.4863,
+    "low": 1193590696.2967,
+    "high": 1697295904.6758
+   }
+  }
+ },
+ "preset_fit": {
+  "r_squared": 0.9981,
+  "parameters": {
+   "growth_rate": {
+    "value": 2.3595,
+    "low": 2.1379,
+    "high": 2.5811
+   },
+   "decay_rate": {
+    "value": 0.6446,
+    "low": 0.6149,
+    "high": 0.6744
+   },
+   "peak_day": {
+    "value": 3.167,
+    "low": 3.1226,
+    "high": 3.2113
+   },
+   "peak_load": {
+    "value": 0.893,
+    "low": 0.8662,
+    "high": 0.9199
+   }
+  }
+ },
+ "growth_rate": {
+  "name": "growth_rate",
+  "published": {
+   "value": 4.3436,
+   "low": 2.4298,
+   "high": 6.2574
+  },
+  "preset": 2.3595,
+  "ratio_preset_to_published": 0.543,
+  "inside_published_range": false,
+  "agrees": false
+ },
+ "decay_rate": {
+  "name": "decay_rate",
+  "published": {
+   "value": 4.2039,
+   "low": 1.5104,
+   "high": 6.8974
+  },
+  "preset": 0.6446,
+  "ratio_preset_to_published": 0.153,
+  "inside_published_range": false,
+  "agrees": false
+ },
+ "shape": {
+  "best_offset_days": 8.25,
+  "normalised_rmse": 0.1751,
+  "good_match": false,
+  "limit": 0.1
+ },
+ "verdict": "does not agree",
+ "advice": [
+  "The rise differs. In pathogen.py change beta or prod for this preset (they set the growth rate): raise them.",
+  "The fall differs. Change clear, delta or kill for this preset (they set the decay rate): raise them."
+ ]
+}

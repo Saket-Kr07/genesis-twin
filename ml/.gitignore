@@ -1,0 +1,12 @@
+# virtual environments (yours lives inside ml/)
+venv/
+.venv/
+# raw + processed data are re-created by prepare_data.py
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store

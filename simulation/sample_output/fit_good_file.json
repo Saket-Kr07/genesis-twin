@@ -1,0 +1,97 @@
+{
+ "parameters": {
+  "growth_rate": {
+   "value": 1.2254,
+   "low": 1.1483,
+   "high": 1.3025
+  },
+  "decay_rate": {
+   "value": 0.5709,
+   "low": 0.5425,
+   "high": 0.5994
+  },
+  "peak_day": {
+   "value": 3.9526,
+   "low": 3.8685,
+   "high": 4.0367
+  },
+  "peak_load": {
+   "value": 7.1527,
+   "low": 6.976,
+   "high": 7.3295
+  }
+ },
+ "validation_errors": [],
+ "warnings": [],
+ "fit": {
+  "r_squared": 0.9992,
+  "points": 15,
+  "model": "rise_and_fall_curve"
+ },
+ "fitted_curve": [
+  {
+   "day": 0.0,
+   "load": 0.1126
+  },
+  {
+   "day": 1.0,
+   "load": 0.382
+  },
+  {
+   "day": 2.0,
+   "load": 1.2693
+  },
+  {
+   "day": 3.0,
+   "load": 3.7708
+  },
+  {
+   "day": 4.0,
+   "load": 7.258
+  },
+  {
+   "day": 5.0,
+   "load": 6.8265
+  },
+  {
+   "day": 6.0,
+   "load": 4.335
+  },
+  {
+   "day": 7.0,
+   "load": 2.5006
+  },
+  {
+   "day": 8.0,
+   "load": 1.4178
+  },
+  {
+   "day": 9.0,
+   "load": 0.8015
+  },
+  {
+   "day": 10.0,
+   "load": 0.4529
+  },
+  {
+   "day": 11.0,
+   "load": 0.2559
+  },
+  {
+   "day": 12.0,
+   "load": 0.1446
+  },
+  {
+   "day": 13.0,
+   "load": 0.0817
+  },
+  {
+   "day": 14.0,
+   "load": 0.0461
+  }
+ ],
+ "target_organs": [
+  "lungs"
+ ],
+ "unrecognised_tissues": []
+}
