@@ -1,0 +1,10 @@
+Dataset: Longitudinal SARS-CoV-2 Viral Loads (Caltech COVID-19 Study)
+Repository: CaltechDATA, DOI 10.22002/D1.20049 (https://data.caltech.edu/records/pmm08-6q581)
+File: 20220228_DataTables_Final.xlsx   Licence: CC0 (public domain)
+Paper: Viloria Winnett et al. 2022 (medRxiv preprint; check for peer-reviewed version and cite that)
+Sheet used: FIG1A&1C
+Selection: Sample Type = NasalSwab, Participant = A (most detectable time points: 37 of 45)
+Columns: day = "Days from Symptom Onset (Days)"; load = "SARS-CoV-2 Viral Load (N1 copies/mL)"
+Cleaning: rows marked ND (not detected, below detection limit) removed; no values edited. Units are plain copies/mL (not log10).
+Days are relative to symptom onset, so early values are negative.
+Day shift: validation script rejects negative days, so 3.15 was added to every day. Day 0 is now the first detectable sample (3.15 days before symptom onset). Only the time axis was shifted; load values are unchanged.

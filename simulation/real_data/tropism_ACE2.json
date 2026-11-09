@@ -1,0 +1,108 @@
+{
+ "tropism": {
+  "brain": 0.0008,
+  "heart": 0.1566,
+  "lungs": 0.0027,
+  "liver": 0.2433,
+  "stomach": 0.0098,
+  "intestines": 0.9,
+  "kidneys": 0.3217,
+  "bladder": 0.0031,
+  "pancreas": 0.0094,
+  "spleen": 0.0078,
+  "thyroid": 0.018,
+  "reproductive": 0.1823
+ },
+ "organs_from_data": [
+  "brain",
+  "heart",
+  "lungs",
+  "liver",
+  "stomach",
+  "intestines",
+  "kidneys",
+  "bladder",
+  "pancreas",
+  "spleen",
+  "thyroid",
+  "reproductive"
+ ],
+ "no_data_organs": [],
+ "unmapped_tissues": [
+  "adipose tissue",
+  "basal ganglia",
+  "breast",
+  "choroid plexus",
+  "esophagus",
+  "placenta",
+  "retina",
+  "salivary gland",
+  "skeletal muscle",
+  "skin",
+  "smooth muscle",
+  "tongue"
+ ],
+ "evidence": {
+  "thyroid": {
+   "tissue": "thyroid gland",
+   "value": "4.6",
+   "tropism": 0.018
+  },
+  "brain": {
+   "tissue": "midbrain",
+   "value": "0.2",
+   "tropism": 0.0008
+  },
+  "intestines": {
+   "tissue": "small intestine",
+   "value": "230.5",
+   "tropism": 0.9
+  },
+  "spleen": {
+   "tissue": "blood vessel",
+   "value": "2.0",
+   "tropism": 0.0078
+  },
+  "reproductive": {
+   "tissue": "testis",
+   "value": "46.7",
+   "tropism": 0.1823
+  },
+  "liver": {
+   "tissue": "gallbladder",
+   "value": "62.3",
+   "tropism": 0.2433
+  },
+  "heart": {
+   "tissue": "heart muscle",
+   "value": "40.1",
+   "tropism": 0.1566
+  },
+  "kidneys": {
+   "tissue": "kidney",
+   "value": "82.4",
+   "tropism": 0.3217
+  },
+  "lungs": {
+   "tissue": "lung",
+   "value": "0.7",
+   "tropism": 0.0027
+  },
+  "pancreas": {
+   "tissue": "pancreas",
+   "value": "2.4",
+   "tropism": 0.0094
+  },
+  "stomach": {
+   "tissue": "stomach",
+   "value": "2.5",
+   "tropism": 0.0098
+  },
+  "bladder": {
+   "tissue": "urinary bladder",
+   "value": "0.8",
+   "tropism": 0.0031
+  }
+ },
+ "source": "Human Protein Atlas version 25.1, RNA consensus tissue (nTPM), gene ACE2"
+}
