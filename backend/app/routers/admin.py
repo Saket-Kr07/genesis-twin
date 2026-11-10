@@ -1,4 +1,9 @@
-"""Admin only. Approve or reject a candidate model version and keep the decision log."""
+"""Admin only. Approve or reject a model version and keep the decision log.
+
+The decision is always logged in model_decisions. If a version with the same name is
+registered in model_versions (see model_versions.py), its status and approved_at are
+updated too. Approving a version makes it the current one, because the registry picks
+the latest approved_at."""
 from typing import Optional
 
 from fastapi import APIRouter, Depends
@@ -9,6 +14,7 @@ from sqlalchemy.orm import Session
 from ..db import Base, get_db
 from ..deps import require_role
 from ..models import User, utcnow
+from .model_versions import ModelVersion
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -47,16 +53,31 @@ def approve_model(
     admin: User = Depends(require_role("admin")),
     db: Session = Depends(get_db),
 ):
+    version = body.model_version.strip()
     d = ModelDecision(
-        model_version=body.model_version,
+        model_version=version,
         approved=body.approve,
         note=body.note,
         decided_by=admin.id,
     )
     db.add(d)
+
+    # Update the registry row, if this version was registered. One commit for both.
+    row = db.query(ModelVersion).filter(ModelVersion.version == version).first()
+    if row is not None:
+        if body.approve:
+            row.status = "approved"
+            row.approved_at = utcnow()
+        else:
+            row.status = "rejected"
+            row.approved_at = None
     db.commit()
     db.refresh(d)
-    return _out(d)
+
+    out = _out(d)
+    out["registry_updated"] = row is not None
+    out["registry_status"] = row.status if row is not None else None
+    return out
 
 
 @router.get("/models")
