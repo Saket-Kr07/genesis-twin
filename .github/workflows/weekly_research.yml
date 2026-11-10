@@ -25,3 +25,11 @@ jobs:
       - name: Fetch research papers
         run: |
           python research/fetch_papers.py
+
+      - name: Save fetched papers as GitHub artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-research-papers-${{ github.run_number }}
+          path: research/data/papers.json
+          if-no-files-found: error
+          retention-days: 30
