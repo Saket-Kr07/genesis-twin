@@ -1,3 +1,4 @@
+
 """Genesis Twin API. Run from the backend folder:
     uvicorn app.main:app --reload --port 8000
 Interactive docs: http://localhost:8000/docs"""
@@ -10,7 +11,7 @@ from . import config
 from . import models  # noqa: F401  (registers the tables)
 from .db import Base, engine
 from . import functions
-from .routers import auth, body, experiments, pathogens, research, twin, uploads, billing, admin
+from .routers import auth, body, experiments, pathogens, research, twin, uploads, billing, admin, model_versions
 
 
 @asynccontextmanager
@@ -58,3 +59,4 @@ app.include_router(experiments.router)
 app.include_router(uploads.router)
 app.include_router(billing.router)
 app.include_router(admin.router)
+app.include_router(model_versions.router)
