@@ -1,0 +1,9 @@
+Gene	Gene name	Tissue	Cell type	Level	Reliability
+EX0001	EXAMPLEGENE	lung	pneumocytes	High	SYNTHETIC
+EX0001	EXAMPLEGENE	lung	macrophages	Medium	SYNTHETIC
+EX0001	EXAMPLEGENE	nasopharynx	respiratory epithelial cells	Medium	SYNTHETIC
+EX0001	EXAMPLEGENE	small intestine	glandular cells	Low	SYNTHETIC
+EX0001	EXAMPLEGENE	kidney	cells in tubules	Low	SYNTHETIC
+EX0001	EXAMPLEGENE	liver	hemato	Not detected	SYNTHETIC
+EX0001	EXAMPLEGENE	skeletal muscle	myocytes	Low	SYNTHETIC
+EX0002	OTHERGENE	brain	neurons	High	SYNTHETIC

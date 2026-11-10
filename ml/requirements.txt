@@ -1,0 +1,8 @@
+# Pinned to the versions in your environment (Python 3.9+, macOS).
+# Everything else in your pip freeze (jupyter, shap, seaborn...) is not needed by this module.
+pandas==2.3.3
+numpy==2.0.2
+scikit-learn==1.6.1
+joblib==1.5.3
+matplotlib==3.9.4
+requests==2.32.5

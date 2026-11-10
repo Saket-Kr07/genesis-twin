@@ -1,0 +1,92 @@
+{
+ "ok": true,
+ "label": "Viloria Winnett et al 2022, Caltech COVID-19 Study, CaltechDATA DOI 10.22002/D1.20049, participant 2",
+ "pathogen_id": "respiratory_virus",
+ "preset_name": "Sample respiratory virus",
+ "points": 31,
+ "log10": false,
+ "tolerance": 0.3,
+ "published_fit": {
+  "r_squared": 0.9734,
+  "warnings": [],
+  "parameters": {
+   "growth_rate": {
+    "value": 20.0,
+    "low": 0.0,
+    "high": 88491.8537
+   },
+   "decay_rate": {
+    "value": 6.8021,
+    "low": 0.0,
+    "high": 84.296
+   },
+   "peak_day": {
+    "value": 5.783,
+    "low": 0.0,
+    "high": 909.0721
+   },
+   "peak_load": {
+    "value": 88289047.3499,
+    "low": 0.0,
+    "high": 537444651390.58
+   }
+  }
+ },
+ "preset_fit": {
+  "r_squared": 0.9981,
+  "parameters": {
+   "growth_rate": {
+    "value": 2.3595,
+    "low": 2.1379,
+    "high": 2.5811
+   },
+   "decay_rate": {
+    "value": 0.6446,
+    "low": 0.6149,
+    "high": 0.6744
+   },
+   "peak_day": {
+    "value": 3.167,
+    "low": 3.1226,
+    "high": 3.2113
+   },
+   "peak_load": {
+    "value": 0.893,
+    "low": 0.8662,
+    "high": 0.9199
+   }
+  }
+ },
+ "growth_rate": {
+  "name": "growth_rate",
+  "published": {
+   "value": 20.0,
+   "low": 0.0,
+   "high": 88491.8537
+  },
+  "preset": 2.3595,
+  "ratio_preset_to_published": 0.118,
+  "inside_published_range": true,
+  "agrees": true
+ },
+ "decay_rate": {
+  "name": "decay_rate",
+  "published": {
+   "value": 6.8021,
+   "low": 0.0,
+   "high": 84.296
+  },
+  "preset": 0.6446,
+  "ratio_preset_to_published": 0.095,
+  "inside_published_range": true,
+  "agrees": true
+ },
+ "shape": {
+  "best_offset_days": 10.0,
+  "normalised_rmse": 0.1821,
+  "good_match": false,
+  "limit": 0.1
+ },
+ "verdict": "partly agrees",
+ "advice": []
+}

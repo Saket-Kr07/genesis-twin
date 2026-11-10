@@ -1,0 +1,53 @@
+{
+  "created": "2026-11-09T12:30:23",
+  "model_version": "pathogen-lab-1.4.0",
+  "seed": null,
+  "source_label": "Viloria Winnett et al 2022, CaltechDATA DOI 10.22002/D1.20049, participant A nasal swab",
+  "input_csv": "real_data/caltech_participant1.csv",
+  "treatment": 0.0,
+  "tropism_file": "real_data/tropism_ACE2.json",
+  "fit": {
+    "r_squared": 0.9751,
+    "points": 37,
+    "model": "rise_and_fall_curve"
+  },
+  "parameters": {
+    "growth_rate": {
+      "value": 4.3436,
+      "low": 2.4298,
+      "high": 6.2574
+    },
+    "decay_rate": {
+      "value": 4.2039,
+      "low": 1.5104,
+      "high": 6.8974
+    },
+    "peak_day": {
+      "value": 3.5303,
+      "low": 3.2497,
+      "high": 3.8109
+    },
+    "peak_load": {
+      "value": 1445443300.4863,
+      "low": 1193590696.2967,
+      "high": 1697295904.6758
+    }
+  },
+  "warnings": [],
+  "target_organs": [],
+  "peak_scores": {
+    "brain": 100,
+    "heart": 96,
+    "lungs": 100,
+    "liver": 94,
+    "stomach": 100,
+    "intestines": 79,
+    "kidneys": 93,
+    "bladder": 100,
+    "pancreas": 100,
+    "spleen": 100,
+    "thyroid": 100,
+    "reproductive": 96
+  },
+  "disclaimer": "Research and education only, not medical advice."
+}

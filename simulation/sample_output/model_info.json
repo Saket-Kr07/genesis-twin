@@ -1,0 +1,99 @@
+{
+ "model_version": "pathogen-lab-1.4.0",
+ "settings": {
+  "days": 30,
+  "steps_per_day": 4,
+  "damage_rate": 0.35,
+  "heal_rate": 0.12,
+  "dose_ec50": 0.4,
+  "dose_hill": 2.0
+ },
+ "presets": {
+  "respiratory_virus": {
+   "name": "Sample respiratory virus",
+   "kind": "virus",
+   "params": {
+    "beta": 1.0,
+    "prod": 15.0,
+    "delta": 0.8,
+    "clear": 1.0,
+    "kill": 1.0,
+    "s": 0.5,
+    "dF": 0.2,
+    "V0": 0.003,
+    "max_effect": 0.9
+   },
+   "tropism": {
+    "brain": 0.15,
+    "heart": 0.35,
+    "lungs": 0.9,
+    "liver": 0.15,
+    "stomach": 0.1,
+    "intestines": 0.1,
+    "kidneys": 0.2,
+    "bladder": 0.05,
+    "pancreas": 0.05,
+    "spleen": 0.3,
+    "thyroid": 0.05,
+    "reproductive": 0.05
+   }
+  },
+  "gut_virus": {
+   "name": "Sample gut virus",
+   "kind": "virus",
+   "params": {
+    "beta": 1.2,
+    "prod": 15.0,
+    "delta": 1.0,
+    "clear": 1.2,
+    "kill": 1.5,
+    "s": 0.6,
+    "dF": 0.3,
+    "V0": 0.003,
+    "max_effect": 0.9
+   },
+   "tropism": {
+    "brain": 0.1,
+    "heart": 0.15,
+    "lungs": 0.1,
+    "liver": 0.4,
+    "stomach": 0.7,
+    "intestines": 0.9,
+    "kidneys": 0.3,
+    "bladder": 0.1,
+    "pancreas": 0.3,
+    "spleen": 0.25,
+    "thyroid": 0.05,
+    "reproductive": 0.05
+   }
+  },
+  "bloodstream_bacterium": {
+   "name": "Sample bloodstream bacterium",
+   "kind": "bacteria",
+   "params": {
+    "r": 1.0,
+    "K": 1.0,
+    "kill": 3.0,
+    "s": 1.5,
+    "dF": 0.02,
+    "B0": 0.001,
+    "max_effect": 1.2
+   },
+   "tropism": {
+    "brain": 0.5,
+    "heart": 0.6,
+    "lungs": 0.4,
+    "liver": 0.5,
+    "stomach": 0.2,
+    "intestines": 0.2,
+    "kidneys": 0.6,
+    "bladder": 0.2,
+    "pancreas": 0.3,
+    "spleen": 0.6,
+    "thyroid": 0.1,
+    "reproductive": 0.1
+   }
+  }
+ },
+ "note": "All values are sample values for a demo, not real outbreak or clinical data."
+}

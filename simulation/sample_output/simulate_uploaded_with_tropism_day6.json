@@ -1,0 +1,722 @@
+{
+ "pathogen_id": "uploaded",
+ "name": "Uploaded pathogen",
+ "model_version": "pathogen-lab-1.4.0",
+ "day": 6,
+ "treatment": 0.0,
+ "treatment_start": 0,
+ "profile": null,
+ "profile_effects": [],
+ "load": 0.6061,
+ "curve": [
+  {
+   "day": 0,
+   "load": 0.0157
+  },
+  {
+   "day": 1,
+   "load": 0.0534
+  },
+  {
+   "day": 2,
+   "load": 0.1774
+  },
+  {
+   "day": 3,
+   "load": 0.5272
+  },
+  {
+   "day": 4,
+   "load": 1.0
+  },
+  {
+   "day": 5,
+   "load": 0.9544
+  },
+  {
+   "day": 6,
+   "load": 0.6061
+  },
+  {
+   "day": 7,
+   "load": 0.3497
+  },
+  {
+   "day": 8,
+   "load": 0.1983
+  },
+  {
+   "day": 9,
+   "load": 0.1121
+  },
+  {
+   "day": 10,
+   "load": 0.0633
+  },
+  {
+   "day": 11,
+   "load": 0.0358
+  },
+  {
+   "day": 12,
+   "load": 0.0202
+  },
+  {
+   "day": 13,
+   "load": 0.0114
+  },
+  {
+   "day": 14,
+   "load": 0.0065
+  },
+  {
+   "day": 15,
+   "load": 0.0036
+  },
+  {
+   "day": 16,
+   "load": 0.0021
+  },
+  {
+   "day": 17,
+   "load": 0.0012
+  },
+  {
+   "day": 18,
+   "load": 0.0007
+  },
+  {
+   "day": 19,
+   "load": 0.0004
+  },
+  {
+   "day": 20,
+   "load": 0.0002
+  },
+  {
+   "day": 21,
+   "load": 0.0001
+  },
+  {
+   "day": 22,
+   "load": 0.0001
+  },
+  {
+   "day": 23,
+   "load": 0.0
+  },
+  {
+   "day": 24,
+   "load": 0.0
+  },
+  {
+   "day": 25,
+   "load": 0.0
+  },
+  {
+   "day": 26,
+   "load": 0.0
+  },
+  {
+   "day": 27,
+   "load": 0.0
+  },
+  {
+   "day": 28,
+   "load": 0.0
+  },
+  {
+   "day": 29,
+   "load": 0.0
+  },
+  {
+   "day": 30,
+   "load": 0.0
+  }
+ ],
+ "curve_smooth": [
+  {
+   "day": 0.0,
+   "load": 0.0157
+  },
+  {
+   "day": 0.25,
+   "load": 0.0214
+  },
+  {
+   "day": 0.5,
+   "load": 0.029
+  },
+  {
+   "day": 0.75,
+   "load": 0.0394
+  },
+  {
+   "day": 1.0,
+   "load": 0.0534
+  },
+  {
+   "day": 1.25,
+   "load": 0.0723
+  },
+  {
+   "day": 1.5,
+   "load": 0.0978
+  },
+  {
+   "day": 1.75,
+   "load": 0.132
+  },
+  {
+   "day": 2.0,
+   "load": 0.1774
+  },
+  {
+   "day": 2.25,
+   "load": 0.2371
+  },
+  {
+   "day": 2.5,
+   "load": 0.3142
+  },
+  {
+   "day": 2.75,
+   "load": 0.4108
+  },
+  {
+   "day": 3.0,
+   "load": 0.5272
+  },
+  {
+   "day": 3.25,
+   "load": 0.659
+  },
+  {
+   "day": 3.5,
+   "load": 0.7957
+  },
+  {
+   "day": 3.75,
+   "load": 0.9206
+  },
+  {
+   "day": 4.0,
+   "load": 1.0
+  },
+  {
+   "day": 4.25,
+   "load": 1.0
+  },
+  {
+   "day": 4.5,
+   "load": 1.0
+  },
+  {
+   "day": 4.75,
+   "load": 1.0
+  },
+  {
+   "day": 5.0,
+   "load": 0.9544
+  },
+  {
+   "day": 5.25,
+   "load": 0.8691
+  },
+  {
+   "day": 5.5,
+   "load": 0.7784
+  },
+  {
+   "day": 5.75,
+   "load": 0.6895
+  },
+  {
+   "day": 6.0,
+   "load": 0.6061
+  },
+  {
+   "day": 6.25,
+   "load": 0.5302
+  },
+  {
+   "day": 6.5,
+   "load": 0.4624
+  },
+  {
+   "day": 6.75,
+   "load": 0.4023
+  },
+  {
+   "day": 7.0,
+   "load": 0.3497
+  },
+  {
+   "day": 7.25,
+   "load": 0.3036
+  },
+  {
+   "day": 7.5,
+   "load": 0.2635
+  },
+  {
+   "day": 7.75,
+   "load": 0.2286
+  },
+  {
+   "day": 8.0,
+   "load": 0.1983
+  },
+  {
+   "day": 8.25,
+   "load": 0.1719
+  },
+  {
+   "day": 8.5,
+   "load": 0.1491
+  },
+  {
+   "day": 8.75,
+   "load": 0.1293
+  },
+  {
+   "day": 9.0,
+   "load": 0.1121
+  },
+  {
+   "day": 9.25,
+   "load": 0.0972
+  },
+  {
+   "day": 9.5,
+   "load": 0.0843
+  },
+  {
+   "day": 9.75,
+   "load": 0.073
+  },
+  {
+   "day": 10.0,
+   "load": 0.0633
+  },
+  {
+   "day": 10.25,
+   "load": 0.0549
+  },
+  {
+   "day": 10.5,
+   "load": 0.0476
+  },
+  {
+   "day": 10.75,
+   "load": 0.0413
+  },
+  {
+   "day": 11.0,
+   "load": 0.0358
+  },
+  {
+   "day": 11.25,
+   "load": 0.031
+  },
+  {
+   "day": 11.5,
+   "load": 0.0269
+  },
+  {
+   "day": 11.75,
+   "load": 0.0233
+  },
+  {
+   "day": 12.0,
+   "load": 0.0202
+  },
+  {
+   "day": 12.25,
+   "load": 0.0175
+  },
+  {
+   "day": 12.5,
+   "load": 0.0152
+  },
+  {
+   "day": 12.75,
+   "load": 0.0132
+  },
+  {
+   "day": 13.0,
+   "load": 0.0114
+  },
+  {
+   "day": 13.25,
+   "load": 0.0099
+  },
+  {
+   "day": 13.5,
+   "load": 0.0086
+  },
+  {
+   "day": 13.75,
+   "load": 0.0074
+  },
+  {
+   "day": 14.0,
+   "load": 0.0065
+  },
+  {
+   "day": 14.25,
+   "load": 0.0056
+  },
+  {
+   "day": 14.5,
+   "load": 0.0049
+  },
+  {
+   "day": 14.75,
+   "load": 0.0042
+  },
+  {
+   "day": 15.0,
+   "load": 0.0036
+  },
+  {
+   "day": 15.25,
+   "load": 0.0032
+  },
+  {
+   "day": 15.5,
+   "load": 0.0027
+  },
+  {
+   "day": 15.75,
+   "load": 0.0024
+  },
+  {
+   "day": 16.0,
+   "load": 0.0021
+  },
+  {
+   "day": 16.25,
+   "load": 0.0018
+  },
+  {
+   "day": 16.5,
+   "load": 0.0015
+  },
+  {
+   "day": 16.75,
+   "load": 0.0013
+  },
+  {
+   "day": 17.0,
+   "load": 0.0012
+  },
+  {
+   "day": 17.25,
+   "load": 0.001
+  },
+  {
+   "day": 17.5,
+   "load": 0.0009
+  },
+  {
+   "day": 17.75,
+   "load": 0.0008
+  },
+  {
+   "day": 18.0,
+   "load": 0.0007
+  },
+  {
+   "day": 18.25,
+   "load": 0.0006
+  },
+  {
+   "day": 18.5,
+   "load": 0.0005
+  },
+  {
+   "day": 18.75,
+   "load": 0.0004
+  },
+  {
+   "day": 19.0,
+   "load": 0.0004
+  },
+  {
+   "day": 19.25,
+   "load": 0.0003
+  },
+  {
+   "day": 19.5,
+   "load": 0.0003
+  },
+  {
+   "day": 19.75,
+   "load": 0.0002
+  },
+  {
+   "day": 20.0,
+   "load": 0.0002
+  },
+  {
+   "day": 20.25,
+   "load": 0.0002
+  },
+  {
+   "day": 20.5,
+   "load": 0.0002
+  },
+  {
+   "day": 20.75,
+   "load": 0.0001
+  },
+  {
+   "day": 21.0,
+   "load": 0.0001
+  },
+  {
+   "day": 21.25,
+   "load": 0.0001
+  },
+  {
+   "day": 21.5,
+   "load": 0.0001
+  },
+  {
+   "day": 21.75,
+   "load": 0.0001
+  },
+  {
+   "day": 22.0,
+   "load": 0.0001
+  },
+  {
+   "day": 22.25,
+   "load": 0.0001
+  },
+  {
+   "day": 22.5,
+   "load": 0.0001
+  },
+  {
+   "day": 22.75,
+   "load": 0.0
+  },
+  {
+   "day": 23.0,
+   "load": 0.0
+  },
+  {
+   "day": 23.25,
+   "load": 0.0
+  },
+  {
+   "day": 23.5,
+   "load": 0.0
+  },
+  {
+   "day": 23.75,
+   "load": 0.0
+  },
+  {
+   "day": 24.0,
+   "load": 0.0
+  },
+  {
+   "day": 24.25,
+   "load": 0.0
+  },
+  {
+   "day": 24.5,
+   "load": 0.0
+  },
+  {
+   "day": 24.75,
+   "load": 0.0
+  },
+  {
+   "day": 25.0,
+   "load": 0.0
+  },
+  {
+   "day": 25.25,
+   "load": 0.0
+  },
+  {
+   "day": 25.5,
+   "load": 0.0
+  },
+  {
+   "day": 25.75,
+   "load": 0.0
+  },
+  {
+   "day": 26.0,
+   "load": 0.0
+  },
+  {
+   "day": 26.25,
+   "load": 0.0
+  },
+  {
+   "day": 26.5,
+   "load": 0.0
+  },
+  {
+   "day": 26.75,
+   "load": 0.0
+  },
+  {
+   "day": 27.0,
+   "load": 0.0
+  },
+  {
+   "day": 27.25,
+   "load": 0.0
+  },
+  {
+   "day": 27.5,
+   "load": 0.0
+  },
+  {
+   "day": 27.75,
+   "load": 0.0
+  },
+  {
+   "day": 28.0,
+   "load": 0.0
+  },
+  {
+   "day": 28.25,
+   "load": 0.0
+  },
+  {
+   "day": 28.5,
+   "load": 0.0
+  },
+  {
+   "day": 28.75,
+   "load": 0.0
+  },
+  {
+   "day": 29.0,
+   "load": 0.0
+  },
+  {
+   "day": 29.25,
+   "load": 0.0
+  },
+  {
+   "day": 29.5,
+   "load": 0.0
+  },
+  {
+   "day": 29.75,
+   "load": 0.0
+  },
+  {
+   "day": 30.0,
+   "load": 0.0
+  }
+ ],
+ "organs": {
+  "brain": {
+   "score": 96,
+   "status": "healthy",
+   "vitals": {
+    "neuro_inflammation_index": 0.13,
+    "reaction_score": 93.1
+   }
+  },
+  "heart": {
+   "score": 96,
+   "status": "healthy",
+   "vitals": {
+    "heart_rate": 71.5,
+    "blood_pressure": "121/81",
+    "ejection_fraction": 59.2
+   }
+  },
+  "lungs": {
+   "score": 22,
+   "status": "critical",
+   "vitals": {
+    "oxygen_saturation": 85.5,
+    "breathing_rate": 26.5,
+    "lung_capacity": 3.4
+   }
+  },
+  "liver": {
+   "score": 100,
+   "status": "healthy",
+   "vitals": {
+    "alt": 25.0,
+    "ast": 22.0,
+    "bilirubin": 0.7
+   }
+  },
+  "stomach": {
+   "score": 96,
+   "status": "healthy",
+   "vitals": {
+    "gut_inflammation": 0.43
+   }
+  },
+  "intestines": {
+   "score": 74,
+   "status": "stressed",
+   "vitals": {
+    "gut_inflammation": 2.6
+   }
+  },
+  "kidneys": {
+   "score": 74,
+   "status": "stressed",
+   "vitals": {
+    "egfr": 88.3,
+    "creatinine": 1.19,
+    "hydration": 94.8
+   }
+  },
+  "bladder": {
+   "score": 96,
+   "status": "healthy",
+   "vitals": {
+    "hydration": 99.1
+   }
+  },
+  "pancreas": {
+   "score": 96,
+   "status": "healthy",
+   "vitals": {
+    "gut_inflammation": 0.43
+   }
+  },
+  "spleen": {
+   "score": 96,
+   "status": "healthy",
+   "vitals": {
+    "white_cell_count": 7.26,
+    "cytokine_level": 9.11,
+    "pathogen_load": 0.61
+   }
+  },
+  "thyroid": {
+   "score": 96,
+   "status": "healthy",
+   "vitals": {
+    "glucose": 91.3,
+    "tsh": 2.06,
+    "cortisol": 12.35
+   }
+  },
+  "reproductive": {
+   "score": 96,
+   "status": "healthy",
+   "vitals": {
+    "hormone_indicators": 99.1
+   }
+  }
+ }
+}
