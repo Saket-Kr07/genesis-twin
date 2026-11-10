@@ -1,6 +1,6 @@
 # Genesis Twin: API Contract
 
-Version 1.1 | 9 Nov 2026 | Owner: Rakhi (Part A) | Based on Master Project Plan v2.2 | File: `backend/api-contract.md` on branch `rakhi` | Repo: github.com/Saket-Kr07/genesis-twin
+Version 1.2 | 10 Nov 2026 | Owner: Rakhi (Part A) | Based on Master Project Plan v2.2 | File: `backend/api-contract.md` on branch `rakhi` | Repo: github.com/Saket-Kr07/genesis-twin
 
 > Every output of this platform is a simulation for research and education. It is not medical advice, and every screen must say so.
 
@@ -249,3 +249,39 @@ Fallback if the payment gateway is blocked: a mock checkout endpoint that sets t
 |---|---|---|
 | 7 Nov 2026 | v1.0 first version from plan v2.2, Sections 8 and 9 | Rakhi |
 | 9 Nov 2026 | v1.1: `predict_health` vitals split (ALT, AST, bilirubin under liver only; `gut_inflammation` under stomach, intestines, pancreas); added units, direction, no-null and integer-score rules. Agreed with Part B (Ravneet). `pathogen_load` scale pending Saket (Part D). | Rakhi |
+
+---
+
+## New in v1.2 (10 Nov 2026)
+
+Nothing from v1.1 changed. These endpoints are only additions. Payments are **test mode only**.
+
+### Billing (test mode)
+
+| Method | Path | Access | Request | Response |
+|---|---|---|---|---|
+| POST | `/billing/checkout` | Logged in | optional `{"plan": "pro_monthly"}` | one call makes the user Pro: `{mode: "test", status: "paid", plan, role, pro_expires_at, note}` |
+| POST | `/billing/webhook` | Payment provider | JSON `{"event": "payment.succeeded", "user_id": 12}` and header `X-Signature` | `{received: true, action: "pro_granted", role}`, or `action: "ignored"` for other events |
+
+- `X-Signature` is the HMAC-SHA256 (hex) of the raw request body, made with the webhook secret. A wrong or missing signature gives 400.
+- 400 if the body is not JSON or `user_id` is missing or not a number. 404 if the user does not exist.
+- An admin is never downgraded to Pro.
+
+### Admin: model approval and versions
+
+| Method | Path | Access | Request | Response |
+|---|---|---|---|---|
+| POST | `/admin/models/approve` | Admin | `{"model_version": "v1.2", "approve": true, "note": "optional"}` | the decision for that model version |
+| GET | `/admin/models` | Admin | none | list of model versions waiting for or past a decision |
+| POST | `/admin/model-versions` | Admin | `{"version": "v1.2", "change_log": "...", "papers": ["doi..."], "metrics": {}}` | 201 with the new model version; 422 if the version is blank; 409 if it already exists |
+| GET | `/research/model-versions` | Public (logged in optional) | none | list of model versions |
+
+### Timelines and compare
+
+| Method | Path | Access | Request | Response |
+|---|---|---|---|---|
+| POST | `/pathogens/timeline` | Same rules as `/pathogens/simulate` | same body as `/pathogens/simulate` (`pathogen_id`, `day`, `treatment`, `treatment_start`, `profile`) | every day in one call, for the day slider |
+| POST | `/twin/timeline` | Public | `sex`, `sleep` (0 to 24), `exercise` (0 to 7), `smoking` (0 to 100), `diet` (1 to 5), `start_age` (default 20), `end_age` (default 80), `step` (1 to 20, default 5) | health scores across the age range; 400 if the range is invalid |
+| POST | `/twin/compare` | Public | `profile_a` and `profile_b` (both the same shape as `/twin/predict`), optional `name_a` and `name_b` (default "Twin A" and "Twin B", up to 40 characters) | the two twins side by side |
+
+Open `http://localhost:8000/docs` for the exact response fields of the timeline and compare endpoints.
