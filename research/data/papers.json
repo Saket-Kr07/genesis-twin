@@ -193,7 +193,7 @@
         "type": [
             "Preprint"
         ],
-        "isPreprint": false,
+        "isPreprint": true,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND (human OR healthcare OR physiology)"
     },
     {
@@ -381,7 +381,7 @@
         "type": [
             "Preprint"
         ],
-        "isPreprint": false,
+        "isPreprint": true,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND cardiovascular"
     },
     {
@@ -392,7 +392,7 @@
         "type": [
             "Preprint"
         ],
-        "isPreprint": false,
+        "isPreprint": true,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND cardiovascular"
     },
     {
@@ -428,7 +428,7 @@
         "type": [
             "Preprint"
         ],
-        "isPreprint": false,
+        "isPreprint": true,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND respiratory"
     },
     {
@@ -451,7 +451,7 @@
         "type": [
             "Preprint"
         ],
-        "isPreprint": false,
+        "isPreprint": true,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND respiratory"
     },
     {
@@ -474,7 +474,7 @@
         "type": [
             "Preprint"
         ],
-        "isPreprint": false,
+        "isPreprint": true,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND respiratory"
     },
     {
@@ -485,7 +485,7 @@
         "type": [
             "Preprint"
         ],
-        "isPreprint": false,
+        "isPreprint": true,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND respiratory"
     },
     {
@@ -535,7 +535,7 @@
         "type": [
             "Preprint"
         ],
-        "isPreprint": false,
+        "isPreprint": true,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND respiratory"
     },
     {
@@ -570,7 +570,7 @@
         "type": [
             "Preprint"
         ],
-        "isPreprint": false,
+        "isPreprint": true,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND respiratory"
     },
     {
@@ -619,6 +619,131 @@
         ],
         "isPreprint": false,
         "searchTopic": "TITLE_ABS:\"digital twin\" AND respiratory"
+    },
+    {
+        "title": "Human-in-the-loop AI predictive digital twin to extend virtual precision diabetes care between visits.",
+        "doi": "10.1038/s44401-026-00118-8",
+        "date": "2026-07-08",
+        "abstract": "In a 6-month randomized trial, we evaluated a digitally enabled \"human-in-the-loop\" care support model using a predictive artificial intelligence (AI) digital twin to provide personalized daily short message service (SMS) feedback for adults with type 2 diabetes (T2D). The parent study enrolled 40 adults aged ≥18 years with T2D who completed 3 months of baseline observation followed by a 3-month intervention period, generating 6467 longitudinal data points across weight, dietary intake, physical activity, and glucose monitoring (mean follow-up: 174 days). For this ancillary AI intervention, a subset of 19 participants was randomized to receive either AI-generated individualized daily feedback (AI group, n = 10) or no daily feedback (control group, n = 9). The online human-in-the-loop predictive control model incorporated a transfer-learning artificial neural network predictive digital twin trained on participant self-monitoring data, including weight, food logs, physical activity, and glucose values. A particle swarm optimization controller identified personalized behavioral recommendations aligned with glucose and weight goals, and the digital twin was retrained weekly using newly accrued data. The model achieved ≥80% prediction accuracy across all diet-condition subgroups. During the intervention period, participants receiving AI-generated feedback demonstrated trends toward increased daily step counts and improved adherence to caloric and carbohydrate intake targets. The AI intervention group achieved significantly greater weight loss than controls (mean loss 5.87 lbs vs 3.57 lbs; p < 0.012) while maintaining stable glucose levels throughout the study period (p = 0.661). These findings suggest that AI-enabled predictive digital twin models may offer a scalable approach for extending precision diabetes self-management support beyond clinic visits.",
+        "type": [
+            "research-article",
+            "Journal Article"
+        ],
+        "isPreprint": false,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "ReplayBG-Web: A Novel Web Interface to Ease the Creation and Use of Digital Twins for Type 1 Diabetes.",
+        "doi": "10.1177/19322968261481540",
+        "date": "2026-08-27",
+        "abstract": "<h4>Background</h4>ReplayBG is a recently released tool that acts as a digital twin (DT) of individuals with type 1 diabetes, learning glucose-insulin dynamics from real-world data and enabling users to test the effect of different therapeutic actions. However, its adoption remains limited by the technical expertise required to operate it.<h4>Methods</h4>To lower this barrier, we developed ReplayBG-web, a web-based interface built on ReplayBG that allows any user, without programming skills, to upload standardized CSV files and automatically generate DTs.<h4>Results</h4>ReplayBG-web enables users to interactively visualize original data and metrics, create new scenarios by modifying the dose and timing of insulin and meals, obtain the resulting alternative glucose profiles and related control metrics, and export results for downstream analysis.<h4>Conclusions</h4>ReplayBG-web represents a step forward in filling the gap between research, clinical practice, self-learning, and potentially education, making digital twin technology for type 1 diabetes accessible to a wider range of users.",
+        "type": [
+            "Journal Article"
+        ],
+        "isPreprint": false,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "Analysis of digital twin applications in nursing practice and education: a scoping review.",
+        "doi": "10.3352/jeehp.2026.23.13",
+        "date": "2026-06-09",
+        "abstract": "This scoping review examined research applying digital twins in nursing practice and education and summarized their application domains, methods, outcomes, and implications. A human digital twin is a virtual health replica modeled from real-world data. This study followed the 5-stage scoping review process proposed by Arksey and O'Malley. Two researchers independently conducted the literature search without restrictions on publication year. From April 1 to 15, 2026, the Cochrane Library, PubMed, Embase, CINAHL, ERIC, and RISS databases were searched, and 15 studies were ultimately included. Digital twin applications were identified in 3 major domains: clinical practice and patient-centered care, education and training, and decision-making and workflow management. Application methods and outcomes varied according to technological implementation and included (1) modeling and data-driven prediction, (2) development of immersive learning and practice-training environments, and (3) system integration and decision-support frameworks. In clinical settings, multimodal patient data can be analyzed using artificial intelligence and machine learning to generate a virtual persona resembling the patient, thereby facilitating real-time personalized nursing care and self-management. In educational settings, digital twins can provide realistic and safe learning environments that enhance training effectiveness. Digital twins show substantial potential to advance predictive and personalized nursing in both clinical practice and education. Their data-driven capabilities are expected to contribute to innovative applications in future nursing practice and educational environments.",
+        "type": [
+            "Scoping Review",
+            "review-article",
+            "Journal Article"
+        ],
+        "isPreprint": false,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "FedEC-Dia: Explanation-Calibrated Federated Learning for Patient-Level Diabetes Digital Twin Risk Prediction Under Non-IID Healthcare Data.",
+        "doi": "10.1109/jbhi.2026.3733118",
+        "date": "2026-09-10",
+        "abstract": "Patient-level digital twins for diabetes oriented smart healthcare require risk models that can learn from distributed clinical data while remaining reliable across heterogeneous environments. Federated learning enables collaborative training without centralizing raw patient records, but non-independent and identically distributed (non-IID) data can cause weak-client prediction failure and inconsistent feature-use patterns. Site-specific differences in disease prevalence, clinical measurements, and risk profiles can therefore undermine stable patient state assessment. We propose FedEC-Dia, an explanation calibrated federated learning framework for digital-twin oriented diabetes risk prediction. FedEC-Dia uses a lightweight client-specific affine calibration layer to adjust local risk scale and bias, and constructs differentiable gate based attribution summaries that are softly regularized toward a server-maintained global explanation prototype. Explanation calibration here denotes training-time regularization of gate-based attribution summaries rather than causal clinical explanation. Controlled simulated federated validation on PIMA and MIMIC-III covers label-, feature-, quantity-, and mixed-skew settings. FedEC Dia improves weak-client performance and probability calibration while producing more stable gate-based attribution summaries, supporting its role as a reliability oriented risk-estimation component for distributed patient-level diabetes digital twins.",
+        "type": [
+            "Journal Article"
+        ],
+        "isPreprint": false,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "Digital twin frameworks for diabetes: toward predictive, personalised, and precision-guided management.",
+        "doi": "10.1007/s40200-026-01906-7",
+        "date": "2026-02-17",
+        "abstract": "",
+        "type": [
+            "Letter"
+        ],
+        "isPreprint": false,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "iDT-diet: Toward Personalized Health Forecasting-An Intelligent Digital Twin Model for Diet-Influenced Biomarker Trajectories (Student Abstract).",
+        "doi": "10.1609/aaai.v40i48.42260",
+        "date": "2026-03-14",
+        "abstract": "We present iDT-diet, an intelligent digital twin prototype designed to model the long-term influence of diet quality on health biomarkers and chronic conditions. The system integrates three novel components: (i) a random forest learning model enhanced with Choquet LASSO feature selection for capturing complex, nonlinear interactions in temporal health data; (ii) a translation module that converts predictive outputs into natural language narratives of physical and biomarker states; and (iii) a generative 3D visualization engine that produces dynamic, personalized digital twins reflecting evolving health trajectories. This integration uniquely links advanced machine learning, interpretable communication, and immersive visualization within a single framework. While the current implementation focuses on retrospective digital twin generation, the system architecture supports real-time data integration, enabling continuous monitoring, predictive simulation, and personalized recommendation delivery for diet and lifestyle management.",
+        "type": [
+            "research-article",
+            "Journal Article"
+        ],
+        "isPreprint": false,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "From Conflicting Data to Predictive Insights: A Digital Twin Approach for ADRD Risk and Resilience",
+        "doi": "",
+        "date": "2025-12-01",
+        "abstract": "",
+        "type": [
+            "Abstract"
+        ],
+        "isPreprint": false,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "Human-in-the-Loop AI Digital Twin to Extend Virtual Precision Diabetes Care Between Visits: Results From a Randomized Clinical Trial",
+        "doi": "10.21203/rs.3.rs-8960634/v1",
+        "date": "2026-03-06",
+        "abstract": "<title>Abstract</title>  <p>  <bold>Background</bold>  Type 2 diabetes (T2D) requires sustained lifestyle support, yet health systems face workforce and visit-capacity constraints that limit ongoing coaching between encounters. We evaluated a digitally enabled “human-in-the-loop” care support model that uses a predictive AI digital twin to generate daily, personalized short message service (SMS) feedback aimed at improving lifestyle adherence while maintaining glycemic stability.  <bold>Methods</bold>  The parent trial enrolled 40 adults (≥18 years) with T2D in a 6-month randomized trial. Participants completed 3 months of baseline observation followed by a 3-month intervention period (6,467 longitudinal data points; mean follow-up: 174 days). For the ancillary AI intervention, a subset of participants was randomized to either receiving AI-generated daily individualized feedback or no daily feedback. The online human-in-the-loop predictive control (OHLC) model used a transfer-learning artificial neural network digital twin trained on self-monitoring data (weight, food logs, physical activity, glucose). A particle swarm optimization controller identified actionable behavior changes aligned with glucose and weight goals; the digital twin was retrained weekly to incorporate newly accrued data.  <bold>Results</bold>  The OHLC model achieved ≥80% prediction accuracy across all diet-condition subgroups. During the 3-month AI intervention period, participants receiving AI-generated feedback exhibited a trend of improved daily steps and stable or improved total caloric and total carb intake aligned with dietary targets. Mixed ANOVA results showed that the AI intervention group exhibited significant weight loss compared with the control group (average loss:5.871 lbs.; p<.0001), while maintaining stable glucose levels throughout the study period (p= 0.661). In contrast, the non-AI group exhibited more modest weight reduction (average loss: 3.574 lbs.).  <bold>Conclusions</bold>  This study suggests that a human-in-the-loop AI digital twin model can support weight management without compromising glycemic stability, offering a potentially scalable approach for extending precision diabetes self-management support beyond clinic visits. Larger, multi-site studies should assess implementation outcomes, access, and system-level effects on utilization, cost, and quality metrics.  </p>",
+        "type": [
+            "Preprint"
+        ],
+        "isPreprint": true,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "Retrieval-Augmented Simulation for Interpreting Probabilistic Digital Twins in Type 1 Diabetes.",
+        "doi": "10.1177/19322968261484150",
+        "date": "2026-10-07",
+        "abstract": "<h4>Background</h4>Personalized digital twins for type 1 diabetes (T1D) can simulate future glucose responses under different therapeutic conditions, but their probabilistic outputs require structured interpretation before supporting clinician-facing reasoning. We introduce retrieval-augmented simulation (RAS), a modular framework connecting probabilistic digital-twin simulation with guideline-grounded report generation.<h4>Methods</h4>Retrieval-augmented simulation summarizes simulated glucose trajectories, converts them into structured clinical descriptors, retrieves relevant guideline evidence, and generates uncertainty-aware reports for clinician review. We evaluated RAS using data from 35 individuals with T1D in a controlled ablation study involving 2 locally hosted large language models (LLMs) (LLaMA 3.1:8b and Qwen 3:8b). Two independent LLM-based evaluators, GPT-5.5 Thinking and Kimi 2.6 Thinking, assessed report quality using a standardized rubric.<h4>Results</h4>Structured clinical descriptors were essential for guideline selection: their removal substantially altered the retrieved evidence, demonstrating that qualitative clinical framing influenced evidence selection more strongly than numerical values alone. For LLaMA, the full RAS pipeline achieved the strongest overall performance, maintaining high numerical faithfulness (NumCov: 0.98±0.03) and consistent guideline coupling. In contrast, Qwen exhibited substantial model-specific safety risks and frequently distorted simulation-derived numerical values (NumCov: <i>[Formula: see text]</i>). Directional bias analysis showed that Qwen systematically under-reported time in range by a mean of -10.6 percentage points and over-reported time below range, thereby inflating hypoglycemia risk. These safety findings were consistent across both independent evaluators, with a mean score difference of >2.1 points.<h4>Conclusion</h4>Retrieval-augmented simulation provides a reproducible framework for the expert-supervised interpretation of digital-twin simulations. However, aggregate framework scores alone are insufficient for clinical validation. Downstream language models must be rigorously evaluated for numerical faithfulness and directional bias to prevent unsafe, hallucinated clinical narratives.",
+        "type": [
+            "Journal Article"
+        ],
+        "isPreprint": false,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "Nonlinear mixed-effects modeling of gastrointestinal glucose absorption for Bayesian digital twin identification.",
+        "doi": "10.1016/j.cmpb.2026.109703",
+        "date": "2026-10-30",
+        "abstract": "<h4>Background</h4>Digital twin (DT) methodologies for type 1 diabetes require personalization of physiological models using continuous glucose monitoring and exogenous insulin data. The imbalance between data information content and model complexity often necessitates Bayesian estimation for model identification, requiring informative a priori parameter distributions that are difficult to obtain from the literature, especially for parameters describing gastrointestinal glucose absorption. This study aims to provide such priors by modeling inter-subject variability of meal glucose rate of appearance (Ra).<h4>Methods</h4>Four glucose absorption models used in published DT were formulated within a nonlinear mixed-effects (NLME) framework. Models were identified using Ra derived from gold-standard tracer data collected in 43 adults undergoing either a mixed meal (MTT) or an oral glucose tolerance test (OGTT). A stepwise, parsimony guided, model-building strategy was adopted to define the random-effects structure and incorporate covariate effects. Parameter estimation was performed using likelihood-based methods. Model adequacy was assessed through parameter precision and visual predictive checks.<h4>Results</h4>All models achieved adequate fits of Ra with acceptable parameter precision. Test type and body mass index were the covariates explaining most of the inter-subject variability. While all models well reproduced mixed-meal Ra, differences were observed in their representations of OGTT responses. For each model, fixed effects, random-effects covariance matrices, and covariate relationships were estimated, enabling the construction of ready-to-use prior parameter distributions for Bayesian DT implementations.<h4>Conclusions</h4>The proposed NLME-based framework provides physiologically grounded prior distributions that will support researchers in designing robust and physiologically consistent Bayesian DT algorithms.",
+        "type": [
+            "Journal Article"
+        ],
+        "isPreprint": false,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
+    },
+    {
+        "title": "Digital Twin Model of Treatment Outcomes in Post-Stroke Aphasia",
+        "doi": "10.64898/2026.02.03.26345022",
+        "date": "2026-02-04",
+        "abstract": "<h4>Background</h4>  Recovery from chronic post-stroke aphasia is highly heterogeneous and shaped by lesion characteristics, brain integrity, and systemic health. Traditional group-level models struggle to capture this multidimensional, dynamic variability. Digital twin approaches - patient-specific, continually updating models - may enable individualized prediction and counterfactual evaluation of modifiable risk factors. Therefore, the aim was to develop and validate a proof-of-concept digital twin that predicts individual naming outcomes during language treatment and quantifies the estimated impact of modifiable health factors on naming. This study represents the first application of digital twin modeling to aphasia recovery, and we hypothesize that this could constitute a critical first step toward dynamically adaptive, personalized models for aphasia rehabilitation. <h4>Methods</h4>  We analyzed longitudinal data from 106 chronic stroke survivors with aphasia enrolled in the POLAR randomized clinical trial. For each participant we combined baseline demographic/health variables (age, sex, education, days post-stroke, hypertension, diabetes, BMI), lesion load in left-hemisphere language ROIs (JHU atlas), ROI-level white-matter microstructure (FA), and resting-state functional connectivity restricted to language regions. A continual-learning linear model (River framework; Adam optimizer) was pretrained on baseline data and updated across timepoints. Model performance was assessed by R² at the final timepoint. Counterfactual simulations systematically altered hypertension, diabetes, and BMI to estimate isolated and combined effects on predicted Philadelphia Naming Test (PNT) scores. <h4>Results</h4>  The digital twin predicted final PNT scores with R² = 0.5848 (explaining approximately 58% of variance). The largest contributors were prior naming performance, age, lesion load in language regions, and white-matter integrity in temporal regions (notably right MTG and STG pole). Counterfactual results estimated modest but consistent effects of health factors, with them collectively accounting for approximately 25% of the variance in treatment gains. The average change in PNT score with counterfactual changes was 7.92 (SD = 16.11). Therefore, diabetic status explained 2% of the variance in treatment gains, hypertensive status explained 4.75%, and increasing BMI explained 18.5%. <h4>Conclusions</h4>  This study demonstrate the feasibility and clinical potential of applying a digital twin framework to chronic post-stroke aphasia, with the model successfully predicting more than half the variance in naming performance during language treatment. Through counterfactual simulation, we demonstrated that modifiable health factors exert measurable, bidirectional influences on predicted treatment outcomes, underscoring the role of systemic health in shaping language recovery. Although the individual effects of these factors were modest in magnitude, their cumulative influence on treatment gains illustrates how multiple small biological contributors can add up to shape meaningful differences in language outcomes. More broadly, these findings illustrate the potential value of digital twin models for aphasia treatment, particularly as a tool to integrate diverse biological factors and generate individualized, dynamically updated predictions. <h4>Graphical Abstract</h4>",
+        "type": [
+            "Preprint"
+        ],
+        "isPreprint": true,
+        "searchTopic": "TITLE_ABS:\"digital twin\" AND diabetes"
     },
     {
         "title": "A hippocampal digital Twin reveals latent structure in freely flying bats",

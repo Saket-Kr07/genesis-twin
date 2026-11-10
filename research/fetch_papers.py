@@ -76,7 +76,13 @@ for query in TOPICS:
                 "date": item.get("firstPublicationDate", ""),
                 "abstract": item.get("abstractText", ""),
                 "type": publication_types,
-                "isPreprint": item.get("isPreprint", False),
+               "isPreprint": (
+    item.get("source") == "PPR"
+    or any(
+        "preprint" in str(pub_type).lower()
+        for pub_type in publication_types
+    )
+),
                 "searchTopic": query
             }
 
