@@ -79,3 +79,9 @@ input[type='range'] { width: 100%; accent-color: var(--accent); }
   .info { top: auto; bottom: 40px; left: 8px; right: 8px; width: auto; max-height: 45%; z-index: 5; }
   .search { min-width: 0; max-width: none; flex-basis: 100%; }
 }
+
+.select { width: 100%; font: inherit; font-size: 13px; color: var(--text); background: #1b2944; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; margin: 6px 0 8px; }
+.day-row { display: flex; gap: 8px; align-items: flex-end; }
+.day-row .slider { flex: 1; margin-bottom: 0; }
+.day-row button { min-width: 58px; }
+.status { margin-left: auto; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; }

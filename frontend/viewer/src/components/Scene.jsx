@@ -112,8 +112,8 @@ export function Animator({ enabled, version }) {
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
-           const beat = enabled ? 1 + 0.015 * Math.pow(Math.max(0, Math.sin(t * Math.PI * 2 * 1.0)), 4) : 1; // 60 bpm, gentle // ~70 bpm
-    const breath = enabled ? 1 + 0.03 * (0.5 - 0.5 * Math.cos((t * Math.PI * 2) / 4)) : 1; // 15 breaths/min
+    const beat = enabled ? 1 + 0.015 * Math.pow(Math.max(0, Math.sin(t * Math.PI * 2 * 1.0)), 4) : 1; // 60 bpm, gentle
+    const breath = enabled ? 1 + 0.012 * (0.5 - 0.5 * Math.cos((t * Math.PI * 2) / 5)) : 1; // 12 breaths/min, gentle
     lists.heart.forEach((m) => pulse(m, beat));
     lists.lungs.forEach((m) => pulse(m, breath));
   });
@@ -121,9 +121,11 @@ export function Animator({ enabled, version }) {
 }
 
 // ---------- labels with leader lines, one per organ ----------
-export function Labels({ show, version, layers }) {
+export function Labels({ show, version, layers, bodyScale }) {
+  const scene = useThree((s) => s.scene);
   const labels = useMemo(() => {
     if (!show) return [];
+    scene.updateMatrixWorld(true); // body scale may have just changed
     const ms = allMeshes();
     const all = boxOf(ms);
     if (all.isEmpty()) return [];
@@ -134,7 +136,7 @@ export function Labels({ show, version, layers }) {
       const c = box.getCenter(new THREE.Vector3());
       return { id: o.id, text: o.label, pos: c.toArray(), left: c.x < midX };
     }).filter(Boolean);
-  }, [show, version, layers]);
+  }, [show, version, layers, bodyScale]);
 
   return labels.map((l) => (
     <Html key={l.id} position={l.pos} zIndexRange={[20, 0]} style={{ pointerEvents: 'none' }}>

@@ -65,6 +65,49 @@ export function LifestylePanel({ life, setLife, source }) {
   );
 }
 
+export function BodyShapePanel({ shape, setShape }) {
+  const set = (k) => (v) => setShape((s) => ({ ...s, [k]: v }));
+  const bmi = shape.weight / Math.pow(shape.height / 100, 2);
+  return (
+    <section className="panel">
+      <h2>Body shape</h2>
+      <Slider label="Height" value={shape.height} min={140} max={205} unit=" cm" onChange={set('height')} />
+      <Slider label="Weight" value={shape.weight} min={40} max={140} unit=" kg" onChange={set('weight')} />
+      <p className="note">BMI {bmi.toFixed(1)} · organs scale with the body</p>
+    </section>
+  );
+}
+
+export function InfectionPanel({ inf, setInf, day, setDay, playing, setPlaying, source, load, pathogens }) {
+  const set = (k) => (v) => setInf((s) => ({ ...s, [k]: v }));
+  return (
+    <section className="panel">
+      <h2>Infection</h2>
+      <label className="layer-head">
+        <input type="checkbox" checked={inf.on} onChange={(e) => setInf((s) => ({ ...s, on: e.target.checked }))} />
+        <span>Simulate infection</span>
+      </label>
+      {inf.on && (
+        <>
+          <select className="select" value={inf.pathogen} onChange={(e) => set('pathogen')(e.target.value)}>
+            {pathogens.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+          </select>
+          <Slider label="Treatment" value={inf.treatment} min={0} max={1} step={0.1} onChange={set('treatment')} />
+          <Slider label="Treatment starts" value={inf.treatmentStart} min={0} max={30} unit=" d" onChange={set('treatmentStart')} />
+          <div className="day-row">
+            <button onClick={() => { if (day >= 30) setDay(0); setPlaying((p) => !p); }}>{playing ? 'Pause' : 'Play'}</button>
+            <Slider label="Day" value={day} min={0} max={30} step={0.25} onChange={(v) => { setPlaying(false); setDay(v); }} />
+          </div>
+          <p className="note">
+            {typeof load === 'number' ? `Pathogen load ${load.toFixed(1)} · ` : ''}
+            Data: {source === 'api' ? 'live model API' : source === 'dummy' ? 'dummy (API offline)' : 'loading…'}
+          </p>
+        </>
+      )}
+    </section>
+  );
+}
+
 export function InfoPanel({ mesh, health, onClose }) {
   if (!mesh) return null;
   const g = mesh.userData.gt;
@@ -80,6 +123,7 @@ export function InfoPanel({ mesh, health, onClose }) {
           <div className="score">
             <span className="dot" style={{ background: `#${scoreColor(h.score).getHexString()}` }} />
             Health score <b>{Math.round(h.score)}</b>/100
+            {h.status && <span className="status">{h.status}</span>}
           </div>
           <table>
             <tbody>

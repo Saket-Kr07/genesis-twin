@@ -4,9 +4,9 @@ import { Canvas } from '@react-three/fiber';
 import { CameraControls, GizmoHelper, GizmoViewcube, Loader } from '@react-three/drei';
 import { SYSTEMS } from './config.js';
 import { inferSystem, applyLayers, applyHighlights, allMeshes, boxOf } from './registry.js';
-import { predictHealth } from './api.js';
+import { predictHealth, fetchTimeline, timelineAt, PATHOGENS } from './api.js';
 import { Models, AutoFit, Animator, Labels } from './components/Scene.jsx';
-import { LayersPanel, LifestylePanel, InfoPanel, SearchBox, Toolbar, CreditsModal } from './components/Panels.jsx';
+import { LayersPanel, LifestylePanel, InfoPanel, SearchBox, Toolbar, CreditsModal, BodyShapePanel, InfectionPanel } from './components/Panels.jsx';
 
 // Turns the list of GLB paths into files with a sex and a system.
 function buildFiles(paths, sex, modelsBase) {
@@ -40,6 +40,19 @@ export default function BodyViewer({ modelsBase = '/' }) {
   const [panelsOpen, setPanelsOpen] = useState(true);
   const [everLoaded, setEverLoaded] = useState(() => new Set());
   const controlsRef = useRef();
+  const [shape, setShape] = useState({ height: 175, weight: 70 });
+  const [inf, setInf] = useState({ on: false, pathogen: 'respiratory_virus', treatment: 0, treatmentStart: 5 });
+  const [timeline, setTimeline] = useState({ data: null, source: '' });
+  const [day, setDay] = useState(0);
+  const [playing, setPlaying] = useState(false);
+
+  // Body scale: height stretches the whole body, weight (via BMI) widens it. Organs are inside, so they scale too.
+  const bodyScale = useMemo(() => {
+    const sy = shape.height / 175;
+    const bmiRatio = shape.weight / Math.pow(shape.height / 100, 2) / (70 / 1.75 ** 2);
+    const sxz = sy * Math.min(1.45, Math.max(0.75, Math.sqrt(bmiRatio)));
+    return [sxz, sy, sxz];
+  }, [shape]);
 
   // 1. Find the GLB files in public/
   useEffect(() => {
@@ -74,11 +87,41 @@ export default function BodyViewer({ modelsBase = '/' }) {
     };
   }, [life, sex]);
 
+  // 3b. Infection timeline: fetched once, and again only when pathogen or treatment changes.
+  useEffect(() => {
+    if (!inf.on) return;
+    let live = true;
+    setTimeline((t) => ({ ...t, source: '' }));
+    const t = setTimeout(async () => {
+      const res = await fetchTimeline(inf);
+      if (live) setTimeline(res);
+    }, 300);
+    return () => { live = false; clearTimeout(t); };
+  }, [inf.on, inf.pathogen, inf.treatment, inf.treatmentStart]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Play button: 30 days in ~15 seconds.
+  useEffect(() => {
+    if (!playing) return;
+    const id = setInterval(() => {
+      setDay((d) => {
+        if (d >= 30) { setPlaying(false); return 30; }
+        return Math.min(30, d + 0.25);
+      });
+    }, 125);
+    return () => clearInterval(id);
+  }, [playing]);
+
+  const infNow = useMemo(
+    () => (inf.on && timeline.data ? timelineAt(timeline.data, day) : null),
+    [inf.on, timeline.data, day]
+  );
+  const shownHealth = infNow ? infNow.organs : health.data;
+
   // 4. Push state into the 3D materials.
   useEffect(() => applyLayers(layers), [layers, version]);
   useEffect(
-    () => applyHighlights({ health: health.data, healthOn: opts.healthView, selected }),
-    [health, opts.healthView, selected, version]
+    () => applyHighlights({ health: shownHealth, healthOn: opts.healthView || !!infNow, selected }),
+    [shownHealth, opts.healthView, infNow, selected, version]
   );
   useEffect(() => {
     if (selected && !allMeshes().includes(selected)) setSelected(null);
@@ -124,11 +167,13 @@ export default function BodyViewer({ modelsBase = '/' }) {
           <directionalLight position={[-3, 2, -5]} intensity={1.6} color="#7fb2ff" />
           <directionalLight position={[3, 1, -4]} intensity={1.0} color="#9fc4ff" />
 
-          <Models files={toLoad} onChange={bump} onSelect={setSelected} onFocus={focus} />
+          <group scale={bodyScale}>
+            <Models files={toLoad} onChange={bump} onSelect={setSelected} onFocus={focus} />
+          </group>
           <CameraControls ref={controlsRef} makeDefault />
           <AutoFit version={version} />
           <Animator enabled={opts.animate} version={version} />
-          <Labels show={opts.labels} version={version} layers={layers} />
+          <Labels show={opts.labels} version={version} layers={layers} bodyScale={bodyScale} />
 
           <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
             <GizmoViewcube color="#22304a" textColor="#e6edf7" strokeColor="#4a5f85" hoverColor="#2f7dd1" opacity={0.95} />
@@ -148,11 +193,16 @@ export default function BodyViewer({ modelsBase = '/' }) {
       {panelsOpen && (
         <div className="side">
           <LayersPanel layers={layers} setLayers={setLayers} counts={counts} sex={sex} setSex={setSex} femaleFallback={femaleFallback} />
+          <BodyShapePanel shape={shape} setShape={setShape} />
           <LifestylePanel life={life} setLife={setLife} source={health.source} />
+          <InfectionPanel
+            inf={inf} setInf={setInf} day={day} setDay={setDay} playing={playing} setPlaying={setPlaying}
+            source={timeline.source} load={infNow?.load} pathogens={PATHOGENS}
+          />
         </div>
       )}
 
-      <InfoPanel mesh={selected} health={health.data} onClose={() => setSelected(null)} />
+      <InfoPanel mesh={selected} health={shownHealth} onClose={() => setSelected(null)} />
 
       {paths && paths.length === 0 && (
         <div className="empty panel">No .glb files found in <code>public/</code>. Copy your Z-Anatomy GLB files there and refresh.</div>

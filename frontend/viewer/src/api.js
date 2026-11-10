@@ -25,6 +25,13 @@ export async function predictHealth(params) {
   }
 }
 
+// Vitals may come as [{name, value}] or as {name: value}.
+export function normalizeVitals(v) {
+  if (!v) return [];
+  if (Array.isArray(v)) return v.map((x) => ({ name: x.name ?? x.label ?? '', value: x.value ?? '' }));
+  return Object.entries(v).map(([name, value]) => ({ name, value: typeof value === 'number' ? Number(value.toFixed(2)) : value }));
+}
+
 // Accepts the shapes the backend might send: {organs:{...}}, {heart:{...}}, or [{organ, score, vitals}].
 function normalize(json) {
   let raw = json?.organs ?? json;
@@ -32,11 +39,83 @@ function normalize(json) {
   const out = {};
   for (const [id, v] of Object.entries(raw || {})) {
     if (v == null || typeof v.score !== 'number') continue;
-    let vitals = v.vitals ?? [];
-    if (!Array.isArray(vitals)) vitals = Object.entries(vitals).map(([name, value]) => ({ name, value }));
-    out[id] = { score: v.score, vitals };
+    out[id] = { score: v.score, vitals: normalizeVitals(v.vitals) };
   }
   return out;
+}
+
+// ---------------------------------------------------------------
+// Infection timeline: POST /pathogens/timeline
+//   body: { pathogen_id, day, treatment, treatment_start }
+//   response: { times[121], scores{organ: [121]}, load[121], days[31]{organs{organ:{score,status,vitals}}}, model_version }
+// ---------------------------------------------------------------
+export const PATHOGENS = [
+  { id: 'respiratory_virus', label: 'Respiratory virus' },
+  { id: 'gut_virus', label: 'Gut virus' },
+  { id: 'bloodstream_bacterium', label: 'Bloodstream bacterium' },
+];
+
+export async function fetchTimeline({ pathogen, treatment, treatmentStart }) {
+  try {
+    const res = await fetch(`${API_BASE}/pathogens/timeline`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pathogen_id: pathogen, day: 0, treatment, treatment_start: treatmentStart }),
+    });
+    if (!res.ok) throw new Error(`API ${res.status}`);
+    const data = await res.json();
+    if (!data?.scores || !data?.days) throw new Error('bad shape');
+    return { data, source: 'api' };
+  } catch {
+    return { data: dummyTimeline({ pathogen, treatment, treatmentStart }), source: 'dummy' };
+  }
+}
+
+// What the viewer shows on a given (fractional) day.
+export function timelineAt(tl, day) {
+  const i = Math.max(0, Math.min((tl.times?.length ?? 121) - 1, Math.round(day * 4)));
+  const d = tl.days[Math.max(0, Math.min(tl.days.length - 1, Math.floor(day)))];
+  const out = {};
+  for (const [id, list] of Object.entries(tl.scores)) {
+    const score = list[i];
+    if (typeof score !== 'number') continue;
+    const damage = (100 - score) / 100;
+    out[id] = {
+      score,
+      glow: 0.15 + 0.85 * damage, // brighter the more damaged
+      status: d?.organs?.[id]?.status,
+      vitals: normalizeVitals(d?.organs?.[id]?.vitals),
+    };
+  }
+  return { organs: out, load: tl.load?.[i] };
+}
+
+// Offline stand-in with the same shape, so the animation can be built before the API is up.
+function dummyTimeline({ pathogen, treatment, treatmentStart }) {
+  const spread = {
+    respiratory_virus: { lungs: [0, 0.85], heart: [5, 0.35], brain: [9, 0.2], kidneys: [8, 0.25] },
+    gut_virus: { intestines: [0, 0.8], stomach: [1, 0.6], liver: [5, 0.4], kidneys: [7, 0.3] },
+    bloodstream_bacterium: { heart: [1, 0.6], kidneys: [2, 0.7], liver: [3, 0.55], spleen: [1, 0.6], lungs: [4, 0.45], brain: [6, 0.35] },
+  }[pathogen] ?? {};
+  const times = Array.from({ length: 121 }, (_, k) => k * 0.25);
+  const sev = (t, [onset, max]) => {
+    if (t < onset) return 0;
+    const x = t - onset;
+    let s = max * (1 - Math.exp(-x / 3)) * Math.exp(-Math.max(0, x - 8) / 10);
+    if (treatment > 0 && t > treatmentStart) s *= Math.exp(-(t - treatmentStart) * 0.25 * treatment);
+    return s;
+  };
+  const scores = {};
+  for (const o of ORGANS) scores[o.id] = times.map((t) => Number((100 - 100 * (spread[o.id] ? sev(t, spread[o.id]) : 0)).toFixed(1)));
+  const load = times.map((t) => Math.max(...Object.values(spread).map((p) => sev(t, p))) * 100);
+  const days = Array.from({ length: 31 }, (_, d) => ({
+    day: d,
+    organs: Object.fromEntries(ORGANS.map((o) => {
+      const s = scores[o.id][d * 4];
+      return [o.id, { score: s, status: s >= 80 ? 'healthy' : s >= 50 ? 'stressed' : 'critical', vitals: { 'Tissue damage': `${(100 - s).toFixed(0)} %` } }];
+    })),
+  }));
+  return { times, scores, load, days, model_version: 'dummy' };
 }
 
 const clamp = (x, a, b) => Math.max(a, Math.min(b, x));

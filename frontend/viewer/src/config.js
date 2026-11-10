@@ -8,7 +8,7 @@ export const SYSTEMS = [
   { id: 'integumentary', label: 'Skin (Integumentary)', color: '#d9a38b', on: false, opacity: 0.35 },
   { id: 'skeletal',      label: 'Skeletal',             color: '#ece5d3', on: true,  opacity: 1 },
   { id: 'muscular',      label: 'Muscular',             color: '#a3302b', on: false, opacity: 1 },
-  { id: 'nervous',       label: 'Nervous',              color: '#e8c547', on: false, opacity: 1 },
+  { id: 'nervous',       label: 'Nervous',              color: '#e8c547', on: true,  opacity: 1 },
   { id: 'cardiovascular',label: 'Cardiovascular',       color: null,      on: true,  opacity: 1 },
   { id: 'respiratory',   label: 'Respiratory',          color: null,      on: true,  opacity: 1 },
   { id: 'digestive',     label: 'Digestive',            color: null,      on: true,  opacity: 1 },

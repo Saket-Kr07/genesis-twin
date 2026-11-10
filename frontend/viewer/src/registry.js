@@ -152,11 +152,15 @@ export function applyLayers(layers) {
 
 const SELECT_COLOR = new THREE.Color('#4fc3ff');
 
+// Team rule: 80+ green, 50-79 yellow, below 50 red.
+const GREEN = new THREE.Color('#2ecc71');
+const YELLOW = new THREE.Color('#f1c40f');
+const RED = new THREE.Color('#e74c3c');
 export function scoreColor(score) {
-  const s = Math.max(0, Math.min(100, score)) / 100;
-  return new THREE.Color().setHSL(s * 0.33, 0.85, 0.5); // 0 = red, 50 = yellow, 100 = green
+  return (score >= 80 ? GREEN : score >= 50 ? YELLOW : RED).clone();
 }
 
+// health[organ] = { score, vitals, glow? }  glow (0-1) overrides the default intensity.
 export function applyHighlights({ health, healthOn, selected }) {
   for (const m of registry.meshes) {
     const g = m.userData.gt;
@@ -164,7 +168,7 @@ export function applyHighlights({ health, healthOn, selected }) {
     let intensity = 0;
     if (healthOn && g.organ && health[g.organ]) {
       color = scoreColor(health[g.organ].score);
-      intensity = 0.45;
+      intensity = health[g.organ].glow ?? 0.45;
     }
     if (selected === m) {
       color = SELECT_COLOR;
