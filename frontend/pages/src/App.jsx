@@ -19,11 +19,26 @@ async function call(path, { method = "GET", body, token, file } = {}) {
   return j;
 }
 
-function Organ({ id, o }) {
+function Gauge({ s }) {
+  const c = 2 * Math.PI * 17;
   return (
-    <div className="card" style={{ borderColor: col(o.score) }}>
-      <b>{id}</b> <span style={{ color: col(o.score), float: "right" }}>{o.score}</span>
-      <small>{Object.entries(o.vitals || {}).map(([k, v]) => `${(v && v.label) || k}: ${fmt(v)}`).join(" · ")}</small>
+    <svg width="46" height="46" viewBox="0 0 44 44">
+      <circle cx="22" cy="22" r="17" fill="none" stroke="rgba(255,255,255,.09)" strokeWidth="4" />
+      <circle cx="22" cy="22" r="17" fill="none" stroke={col(s)} strokeWidth="4" strokeLinecap="round" strokeDasharray={`${(s / 100) * c} ${c}`} transform="rotate(-90 22 22)" />
+      <text x="22" y="26" textAnchor="middle" fontSize="12" fill="#e7ecf6" className="mono">{Math.round(s)}</text>
+    </svg>
+  );
+}
+
+function Organ({ id, o }) {
+  const st = o.score >= 80 ? "Healthy" : o.score >= 50 ? "Watch" : "Impaired";
+  return (
+    <div className="organ">
+      <Gauge s={o.score} />
+      <div style={{ flex: 1 }}>
+        <b>{id}</b><span className="st" style={{ color: col(o.score) }}>{st}</span>
+        <div className="vit">{Object.entries(o.vitals || {}).map(([k, v]) => <div key={k}><span>{(v && v.label) || k.replace(/_/g, " ")}</span><span className="mono">{fmt(v)}</span></div>)}</div>
+      </div>
     </div>
   );
 }
@@ -38,20 +53,30 @@ function Slide({ label, value, min, max, step = 1, onChange }) {
 
 function Viewer() {
   return VIEWER
-    ? <iframe title="3D viewer" src={VIEWER} style={{ width: "100%", height: 420, border: "1px solid var(--line)", borderRadius: 8 }} />
+    ? <iframe title="3D viewer" src={VIEWER} style={{ width: "100%", height: 560, border: "1px solid var(--line)", borderRadius: 8 }} />
     : <p className="tag">3D viewer: set VITE_VIEWER_URL to the address of frontend/viewer (npm run dev there).</p>;
 }
 
 function Landing({ go }) {
+  const pillars = [
+    ["Traceable", "Every source carries a DOI. Preprints are flagged as not peer reviewed."],
+    ["Governed", "Model updates pass a held-out validation gate and an admin decision before use."],
+    ["Pathogen lab", "Upload a time series, fit growth and decay with uncertainty, watch organ impact by day."],
+    ["Honest uncertainty", "Ranges and reliability flags, never a bare number."],
+  ];
   return (
     <>
-      <h1>Genesis Twin</h1>
-      <p>A 3D digital twin of the human body for research and education. Explore how age, lifestyle and common infections change organ health, all as simulations.</p>
-      <div className="row">
-        <button className="btn main" onClick={() => go("explorer")}>Open the explorer</button>
-        <button className="btn" onClick={() => go("lab")}>Pathogen lab</button>
-        <button className="btn" onClick={() => go("pricing")}>Pricing</button>
-      </div>
+      <section className="hero">
+        <span className="eyebrow">Digital twin research platform</span>
+        <h1>A body model you can audit.</h1>
+        <p>Explore how age, lifestyle and infection change organ function in a layered 3D anatomy, with every number tied to its evidence.</p>
+        <div className="row">
+          <button className="btn main" onClick={() => go("explorer")}>Open the explorer</button>
+          <button className="btn" onClick={() => go("lab")}>Run a pathogen simulation</button>
+        </div>
+      </section>
+      <div className="tiles">{pillars.map(([t, d]) => <div className="tile" key={t}><b>{t}</b><p>{d}</p></div>)}</div>
+      <h2>Live 3D anatomy</h2>
       <Viewer />
     </>
   );
@@ -101,44 +126,75 @@ function Pricing({ token, me, refresh, go }) {
       setMsg(r.note); refresh();
     } catch (e) { setMsg(e.message); }
   };
+  const pro = me && (me.role === "pro" || me.role === "admin");
   return (
     <>
-      <h2>Pricing</h2>
-      <div className="grid">
-        <div className="card"><b>Public (free)</b><small>6 main organs, age and lifestyle sliders, 3 infection presets, latest 5 papers.</small></div>
-        <div className="card"><b>Professional</b><small>All systems, upload your own pathogen data, experiments, full paper list and model history, API access.</small>
-          {token
-            ? <button className="btn main" onClick={buy}>Buy Pro (TEST MODE)</button>
-            : <button className="btn" onClick={() => go("auth")}>Log in to buy</button>}
+      <h2 style={{ marginTop: 0 }}>Plans</h2>
+      <div className="plans">
+        <div className="plan">
+          <span className="eyebrow">Public</span><div className="big">Free</div>
+          <ul><li>Layered 3D anatomy, 6 main organs</li><li>Age and lifestyle simulation</li><li>3 infection presets</li><li>Latest 5 sources</li></ul>
+          <button className="btn" onClick={() => go("explorer")}>Open the explorer</button>
+        </div>
+        <div className="plan rec">
+          <span className="eyebrow">Professional</span><div className="big">Research access</div>
+          <ul><li>All body systems in full detail</li><li>Upload your own pathogen data and fit it</li><li>Save, fork and export experiments</li><li>Full evidence list and model version history</li><li>Personal twin and PDF reports</li></ul>
+          {pro ? <span className="chip ok">Active</span> : token ? <button className="btn main" onClick={buy}>Start Pro (test mode)</button> : <button className="btn main" onClick={() => go("auth")}>Log in to start</button>}
         </div>
       </div>
-      <p className={me?.role === "pro" ? "ok" : ""}>{msg}{me ? ` Current role: ${me.role}` : ""}</p>
-      <p className="tag">Test mode: no real payment is made and no card details are collected.</p>
+      <p className={me?.role === "pro" ? "ok" : "tag"}>{msg || "Test mode: no real payment is made and no card details are collected."}</p>
     </>
   );
 }
+
+const SYSTEMS = { Cardiovascular: ["heart"], Respiratory: ["lungs"], Nervous: ["brain"], Digestive: ["liver", "stomach", "intestines", "pancreas"], Urinary: ["kidneys", "bladder"], Endocrine: ["thyroid", "pancreas"], Immune: ["spleen"], Reproductive: ["reproductive"] };
 
 function Explorer() {
   const [f, setF] = useState({ age: 40, sex: "male", sleep: 7, exercise: 3, smoking: 0, diet: 3 });
   const [d, setD] = useState(null);
   const [err, setErr] = useState("");
+  const [sys, setSys] = useState("All systems");
   useEffect(() => { call("/twin/predict", { method: "POST", body: f }).then((r) => { setD(r); setErr(""); }).catch((e) => setErr(e.message)); }, [f]);
   const set = (k) => (v) => setF({ ...f, [k]: v });
+  const ids = sys === "All systems" ? ORGANS : SYSTEMS[sys];
   return (
     <>
-      <h2>Explorer: age and lifestyle</h2>
-      <Viewer />
-      <div className="row">
-        <label>Sex<select value={f.sex} onChange={(e) => set("sex")(e.target.value)}><option>male</option><option>female</option></select></label>
-        <Slide label="Age" value={f.age} min={20} max={80} onChange={set("age")} />
-        <Slide label="Sleep (h)" value={f.sleep} min={3} max={12} onChange={set("sleep")} />
-        <Slide label="Exercise (days/week)" value={f.exercise} min={0} max={7} onChange={set("exercise")} />
-        <Slide label="Smoking (per day)" value={f.smoking} min={0} max={40} onChange={set("smoking")} />
-        <Slide label="Diet (1-5)" value={f.diet} min={1} max={5} onChange={set("diet")} />
+      <h2 style={{ marginTop: 0 }}>Body explorer</h2>
+      <div className="ex">
+        <div className="stick"><Viewer /></div>
+        <div className="stack">
+          <div className="panel row">
+            <label>Sex<select value={f.sex} onChange={(e) => set("sex")(e.target.value)}><option>male</option><option>female</option></select></label>
+            <Slide label="Age" value={f.age} min={20} max={80} onChange={set("age")} />
+            <Slide label="Sleep (h)" value={f.sleep} min={3} max={12} onChange={set("sleep")} />
+            <Slide label="Exercise (days/week)" value={f.exercise} min={0} max={7} onChange={set("exercise")} />
+            <Slide label="Smoking (per day)" value={f.smoking} min={0} max={40} onChange={set("smoking")} />
+            <Slide label="Diet (1-5)" value={f.diet} min={1} max={5} onChange={set("diet")} />
+          </div>
+          <p className="err">{err}</p>
+          <div className="row">{["All systems", ...Object.keys(SYSTEMS)].map((k) => <button key={k} className={"btn" + (sys === k ? " main" : "")} onClick={() => setSys(k)}>{k}</button>)}</div>
+          <p className="tag">Simulated outputs. Scores: 80+ healthy, 50-79 watch, below 50 impaired.</p>
+          <div className="grid">{d && ids.filter((id) => d[id]).map((id) => <Organ key={id} id={id} o={d[id]} />)}</div>
+        </div>
       </div>
-      <p className="err">{err}</p>
-      <div className="grid">{d && ORGANS.filter((id) => d[id]).map((id) => <Organ key={id} id={id} o={d[id]} />)}</div>
     </>
+  );
+}
+
+function Chart({ times, load, i }) {
+  const W = 560, H = 160, x = (k) => 32 + (k / (load.length - 1)) * (W - 44), y = (v) => H - 24 - v * (H - 44);
+  const pts = load.map((v, k) => `${x(k)},${y(v)}`).join(" ");
+  const pk = load.indexOf(Math.max(...load));
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%" }}>
+      {[0, 0.5, 1].map((g) => <g key={g}><line x1="32" x2={W - 12} y1={y(g)} y2={y(g)} stroke="rgba(255,255,255,.08)" /><text x="4" y={y(g) + 4} fontSize="10" fill="#8d9bb8">{g}</text></g>)}
+      {[0, 10, 20, 30].map((t) => <text key={t} x={x(t * 4)} y={H - 6} fontSize="10" fill="#8d9bb8" textAnchor="middle">{t} d</text>)}
+      <polygon points={`${x(0)},${y(0)} ${pts} ${x(load.length - 1)},${y(0)}`} fill="rgba(94,234,212,.12)" />
+      <polyline points={pts} fill="none" stroke="#5eead4" strokeWidth="2" />
+      <line x1={x(i)} x2={x(i)} y1="8" y2={H - 24} stroke="#8b9cff" strokeDasharray="3 3" />
+      <circle cx={x(pk)} cy={y(load[pk])} r="3.5" fill="#fbbf24" />
+      <text x={x(pk) + 8} y={y(load[pk]) + 4} fontSize="10" fill="#fbbf24">peak, day {times[pk]}</text>
+    </svg>
   );
 }
 
@@ -159,37 +215,41 @@ function Lab({ token, me }) {
   const upload = async (file) => {
     try { setUp(await call("/pathogens/upload", { method: "POST", token, file })); } catch (e) { setUp({ error: e.message }); }
   };
+  const rows = d ? ORGANS.map((id) => ({ id, score: d.scores[id][i], vitals: d.days[Math.min(30, Math.floor(day))].organs[id].vitals })) : [];
+  const worst = [...rows].sort((a, b) => a.score - b.score).slice(0, 3);
   return (
     <>
-      <h2>Pathogen lab</h2>
+      <h2 style={{ marginTop: 0 }}>Pathogen lab</h2>
       <p className="tag">Sample parameters, not claims about real outbreaks.</p>
-      <Viewer />
-      <div className="row">
-        <label>Pathogen<select value={p} onChange={(e) => setP(e.target.value)}>{PATHOGENS.map((x) => <option key={x}>{x}</option>)}</select></label>
-        <Slide label="Day" value={day} min={0} max={30} step={0.25} onChange={setDay} />
-        <Slide label="Treatment strength" value={treatment} min={0} max={1} step={0.05} onChange={setTreatment} />
-        <Slide label="Treatment starts on day" value={start} min={0} max={30} onChange={setStart} />
-      </div>
-      <p className="err">{err}</p>
-      {d && (
-        <>
-          <small className="tag">Model {d.model_version} · load {d.load[i]}</small>
-          <svg viewBox="0 0 300 60" style={{ width: "100%", maxWidth: 500, display: "block", margin: "6px 0" }}>
-            <polyline fill="none" stroke="#4f8cff" strokeWidth="2" points={d.load.map((v, k) => `${(k / (d.load.length - 1)) * 300},${58 - v * 55}`).join(" ")} />
-            <line x1={(i / (d.load.length - 1)) * 300} x2={(i / (d.load.length - 1)) * 300} y1="0" y2="60" stroke="#e74c3c" />
-          </svg>
-          <div className="grid">
-            {ORGANS.map((id) => <Organ key={id} id={id} o={{ score: d.scores[id][i], vitals: d.days[Math.min(30, Math.floor(day))].organs[id].vitals }} />)}
+      <div className="split2">
+        <div className="panel stack">
+          <label>Pathogen<select value={p} onChange={(e) => setP(e.target.value)}>{PATHOGENS.map((x) => <option key={x}>{x}</option>)}</select></label>
+          <Slide label="Day" value={day} min={0} max={30} step={0.25} onChange={setDay} />
+          <Slide label="Treatment strength" value={treatment} min={0} max={1} step={0.05} onChange={setTreatment} />
+          <Slide label="Treatment starts (day)" value={start} min={0} max={30} onChange={setStart} />
+          <span className="tag">Treatment lowers the growth rate in the model. Earlier start, smaller peak.</span>
+          <p className="err">{err}</p>
+        </div>
+        {d && (
+          <div className="stack">
+            <div className="panel">
+              <div className="row" style={{ justifyContent: "space-between", margin: 0 }}><b>Pathogen load, relative to the untreated peak</b><span className="tag mono">day {day} · load {d.load[i]} · {d.model_version}</span></div>
+              <Chart times={d.times} load={d.load} i={i} />
+            </div>
+            <b>Most affected at day {day}</b>
+            <div className="grid">{worst.map((r) => <Organ key={r.id} id={r.id} o={r} />)}</div>
           </div>
-        </>
-      )}
-      <h2>Upload your own pathogen data (Pro)</h2>
+        )}
+      </div>
+      {d && <><h2>All organs</h2><div className="grid">{rows.map((r) => <Organ key={r.id} id={r.id} o={r} />)}</div></>}
+      <h2>Fit your own pathogen data</h2>
       {pro ? (
-        <>
+        <div className="panel">
+          <p className="tag">CSV with columns day and load, at least 5 time points. Anonymised data only.</p>
           <input type="file" accept=".csv" onChange={(e) => e.target.files[0] && upload(e.target.files[0])} />
           {up && <pre className="pre">{JSON.stringify(up, null, 2)}</pre>}
-        </>
-      ) : <p className="tag">Log in as a Pro user to upload a CSV (columns: day, load).</p>}
+        </div>
+      ) : <p className="tag">Log in with a Pro account to upload a CSV.</p>}
     </>
   );
 }
@@ -264,7 +324,7 @@ function Dashboard({ token, me, go }) {
     <>
       <h2>Pro dashboard</h2>
       <div className="row">{["overview", "personal", "experiments", "billing"].map((t) => <button key={t} className={"btn" + (tab === t ? " main" : "")} onClick={() => setTab(t)}>{t}</button>)}</div>
-      {tab === "overview" && <div className="card"><b>{me.email}</b><small>Role: {me.role}</small><small>Pro: all systems, pathogen upload, experiments, full research list, personal twin.</small></div>}
+      {tab === "overview" && <div className="tiles">{[["Account", me.email], ["Access", me.role], ["Unlocked", "All systems, CSV upload, experiments, full evidence list"], ["Mode", "Test billing, simulated data"]].map(([a, b]) => <div className="tile" key={a}><span className="tag">{a}</span><p style={{ color: "var(--text)", margin: ".3em 0 0" }}>{b}</p></div>)}</div>}
       {tab === "personal" && (
         <>
           <p className="tag">Personal twin from measurements. Use anonymised data only; no real patient data.</p>
@@ -296,27 +356,35 @@ export default function App() {
   const save = (t) => { setToken(t); try { t ? localStorage.setItem("gt_token", t) : localStorage.removeItem("gt_token"); } catch {} };
   const refresh = () => token ? call("/auth/me", { token }).then(setMe).catch(() => { save(""); setMe(null); }) : setMe(null);
   useEffect(() => { refresh(); }, [token]);
-  const tabs = [["landing", "Home"], ["explorer", "Explorer"], ["lab", "Pathogen lab"], ["research", "Research"], ["pricing", "Pricing"], ["dashboard", "Dashboard"], ["admin", "Admin"]];
+  const nav = [["landing", "Overview"], ["explorer", "Body explorer"], ["lab", "Pathogen lab"], ["research", "Evidence"], ["dashboard", "Workspace"], ["pricing", "Plans"], ["admin", "Governance"]];
+  const title = (nav.find((n) => n[0] === page) || [0, "Account"])[1];
   return (
-    <>
-      <div className="banner">Simulation for research and education. Not medical advice.</div>
-      <nav>
-        {tabs.map(([k, l]) => <button key={k} className={page === k ? "on" : ""} onClick={() => setPage(k)}>{l}</button>)}
-        <span style={{ flex: 1 }} />
-        {me ? <><span className="tag">{me.email} ({me.role})</span><button onClick={() => { save(""); setPage("landing"); }}>Log out</button></> : <button onClick={() => setPage("auth")}>Log in</button>}
-      </nav>
-      <main>
-        {page === "landing" && <Landing go={setPage} />}
-        {page === "auth" && <Auth onLogin={(t) => { save(t); setPage("explorer"); }} />}
-        {page === "pricing" && <Pricing token={token} me={me} refresh={refresh} go={setPage} />}
-        {page === "explorer" && <Explorer />}
-        {page === "lab" && <Lab token={token} me={me} />}
-        {page === "research" && <Research token={token} />}
-        {page === "dashboard" && <Dashboard token={token} me={me} go={setPage} />}
-        {page === "admin" && <Admin token={token} me={me} />}
-        <button className="btn" onClick={() => window.print()}>Export this page as PDF (print)</button>
-        <p className="tag">Credits: Z-Anatomy and BodyParts3D (3D models), NHANES (health data), Human Protein Atlas (tissue expression), Europe PMC (papers).</p>
-      </main>
-    </>
+    <div className="shell">
+      <aside className="side">
+        <div className="brand"><span className="logo" />Genesis Twin<small>Research platform</small></div>
+        {nav.map(([k, l]) => <button key={k} className={"nv" + (page === k ? " on" : "")} onClick={() => setPage(k)}>{l}</button>)}
+        <div className="grow" />
+        <span className="tag" style={{ padding: "0 10px" }}>Credits: Z-Anatomy, BodyParts3D, NHANES, Human Protein Atlas, Europe PMC</span>
+      </aside>
+      <div className="col">
+        <header className="top">
+          <span className="crumb">{title}</span>
+          <span className="grow" />
+          {me ? <><span className="chip">{me.role}</span><span className="chip">{me.email}</span><button className="btn" onClick={() => { save(""); setPage("landing"); }}>Log out</button></> : <button className="btn main" onClick={() => setPage("auth")}>Log in</button>}
+        </header>
+        <main>
+          {page === "landing" && <Landing go={setPage} />}
+          {page === "auth" && <Auth onLogin={(t) => { save(t); setPage("explorer"); }} />}
+          {page === "pricing" && <Pricing token={token} me={me} refresh={refresh} go={setPage} />}
+          {page === "explorer" && <Explorer />}
+          {page === "lab" && <Lab token={token} me={me} />}
+          {page === "research" && <Research token={token} />}
+          {page === "dashboard" && <Dashboard token={token} me={me} go={setPage} />}
+          {page === "admin" && <Admin token={token} me={me} />}
+          <div className="row"><button className="btn" onClick={() => window.print()}>Export this page as PDF</button></div>
+        </main>
+        <footer className="disc">Simulation for research and education. Not medical advice. Vitals are model outputs, not measurements.</footer>
+      </div>
+    </div>
   );
 }
