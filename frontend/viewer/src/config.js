@@ -5,7 +5,7 @@
 // Body systems shown in the Layers panel.
 // color: tint applied to every mesh of that system (null = keep the model's own colour).
 export const SYSTEMS = [
-  { id: 'integumentary', label: 'Skin (Integumentary)', color: '#d9a38b', on: false, opacity: 0.35 },
+  { id: 'integumentary', label: 'Skin (Integumentary)', color: '#d9a38b', on: true,  opacity: 0.3 },
   { id: 'skeletal',      label: 'Skeletal',             color: '#ece5d3', on: true,  opacity: 1 },
   { id: 'muscular',      label: 'Muscular',             color: '#a3302b', on: false, opacity: 1 },
   { id: 'nervous',       label: 'Nervous',              color: '#e8c547', on: true,  opacity: 1 },
@@ -38,7 +38,8 @@ export const SYSTEM_KEYWORDS = {
 // Order matters: the first match wins.
 export const ORGANS = [
   { id: 'brain', label: 'Brain', system: 'nervous',
-    kw: ['brain', 'cerebr', 'cerebell', 'pons', 'medulla oblongata', 'midbrain', 'thalamus', 'hippocamp'] },
+    kw: ['brain', 'cerebr', 'cerebell', 'pons', 'medulla oblongata', 'midbrain', 'thalamus', 'hippocamp',
+         'gyrus', 'gyri', 'sulcus', 'insula', 'corpus callosum', 'fornix', 'amygdala', 'caudate', 'putamen', 'lobule'] },
   { id: 'stomach', label: 'Stomach', system: 'digestive', kw: ['stomach'] },
   { id: 'lungs', label: 'Lungs', system: 'respiratory', kw: ['lung'] },
   { id: 'heart', label: 'Heart', system: 'cardiovascular',
@@ -56,7 +57,7 @@ export const ORGANS = [
 ];
 
 // Mesh names containing these words are never treated as an organ (e.g. "Hepatic artery").
-export const NOT_ORGAN = ['artery', 'arteries', 'vein', 'nerve', 'ligament', 'muscle', 'lymph node'];
+export const NOT_ORGAN = ['artery', 'arteries', 'vein', 'nerve', 'ligament', 'muscle', 'lymph node', 'tract', 'spinal', 'spino'];
 
 export const ORGAN_INFO = {
   brain: 'Controls thought, movement and the body\'s automatic functions.',

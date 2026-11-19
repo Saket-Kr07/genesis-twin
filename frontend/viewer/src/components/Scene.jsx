@@ -7,7 +7,7 @@ import { ORGANS } from '../config.js';
 
 // ---------- one GLB file ----------
 function ModelFile({ file, onChange }) {
-  const { scene } = useGLTF(file.url, true); // true = Draco decoder enabled
+  const { scene } = useGLTF(file.url, '/draco/'); // Draco decoder served locally (works offline)
   useLayoutEffect(() => {
     registerScene(file, scene);
     onChange();
