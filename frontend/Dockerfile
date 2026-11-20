@@ -7,6 +7,8 @@ RUN npm ci
 COPY . .
 ARG VITE_API_URL=http://localhost:8000
 ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_VIEWER_URL=http://localhost:5174
+ENV VITE_VIEWER_URL=$VITE_VIEWER_URL
 RUN npm run build
 
 FROM nginx:1.27-alpine
