@@ -5,9 +5,18 @@ on:
     branches: [main, develop, rakhi]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  backend-tests:
+  backend:
+    name: Backend lint and tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,19 +25,151 @@ jobs:
           python-version: "3.12"
           cache: pip
           cache-dependency-path: backend/requirements.txt
-      - run: pip install -r backend/requirements.txt
-      - run: pytest
+      - run: pip install -r backend/requirements.txt pytest-cov ruff
+      - name: Lint (syntax errors and undefined names)
+        run: ruff check backend/app --select E9,F63,F7,F82
+      - name: Tests with coverage
         working-directory: backend
+        run: python -m pytest -q --cov=app --cov-report=term --cov-report=xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.xml
 
-  docker-build:
+  simulation:
+    name: Simulation tests
     runs-on: ubuntu-latest
-    needs: backend-tests
     steps:
       - uses: actions/checkout@v4
-      - name: Build backend image
-        run: docker build -f backend/Dockerfile -t genesis-backend .
-      - name: Build worker image
-        run: docker build -f backend/Dockerfile.worker -t genesis-worker .
-      - name: Build frontend image
-        if: ${{ hashFiles('frontend/package.json') != '' }}
-        run: docker build -t genesis-frontend ./frontend
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: simulation/requirements.txt
+      - run: pip install -r simulation/requirements.txt
+      - run: python -m pytest -q simulation
+
+  ml:
+    name: ML tests
+    runs-on: ubuntu-latest
+    # Remove continue-on-error once "python -m pytest -q ml" passes locally.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r ml/requirements.txt pytest
+      - run: python -m pytest -q ml
+
+  frontend:
+    name: Frontend build (${{ matrix.dir }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dir: [frontend/pages, frontend/viewer]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ matrix.dir }}/package-lock.json
+      - run: npm ci
+        working-directory: ${{ matrix.dir }}
+      - run: npm run build
+        working-directory: ${{ matrix.dir }}
+
+  docker:
+    name: Docker build and smoke test
+    needs: [backend]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Start the stack
+        run: docker compose up -d --build db redis backend worker
+      - name: Wait for the API and check the real functions
+        run: |
+          for i in $(seq 1 40); do
+            curl -fs http://localhost:8000/health && break
+            sleep 3
+          done
+          curl -fs http://localhost:8000/health
+          curl -fs http://localhost:8000/health/functions | tee functions.json
+          test "$(grep -o 'real:' functions.json | wc -l)" -eq 6
+      - name: Build the pages image
+        if: ${{ hashFiles('frontend/pages/Dockerfile') != '' }}
+        run: docker build -t genesis-pages frontend/pages
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs --tail=80
+      - name: Stop the stack
+        if: always()
+        run: docker compose down -v
+
+  publish:
+    name: Publish images (CD)
+    needs: [backend, simulation, frontend, docker]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lowercase the owner (registry names must be lowercase)
+        run: echo "OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: backend/Dockerfile
+          push: true
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+          tags: |
+            ghcr.io/${{ env.OWNER }}/genesis-twin-backend:latest
+            ghcr.io/${{ env.OWNER }}/genesis-twin-backend:${{ github.sha }}
+      - name: Worker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: backend/Dockerfile.worker
+          push: true
+          cache-from: type=gha,scope=worker
+          cache-to: type=gha,mode=max,scope=worker
+          tags: |
+            ghcr.io/${{ env.OWNER }}/genesis-twin-worker:latest
+            ghcr.io/${{ env.OWNER }}/genesis-twin-worker:${{ github.sha }}
+      - name: Pages image
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend/pages
+          push: true
+          cache-from: type=gha,scope=pages
+          cache-to: type=gha,mode=max,scope=pages
+          tags: |
+            ghcr.io/${{ env.OWNER }}/genesis-twin-pages:latest
+            ghcr.io/${{ env.OWNER }}/genesis-twin-pages:${{ github.sha }}
+
+  deploy:
+    name: Deploy (optional)
+    needs: [publish]
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_HOOK: ${{ secrets.DEPLOY_HOOK_URL }}
+    steps:
+      - name: Trigger deployment
+        if: env.DEPLOY_HOOK != ''
+        run: curl -fsS -X POST "$DEPLOY_HOOK"
+      - name: No deploy target configured
+        if: env.DEPLOY_HOOK == ''
+        run: echo "No DEPLOY_HOOK_URL secret set. Images were published to GHCR only."
