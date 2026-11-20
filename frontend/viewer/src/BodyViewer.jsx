@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { Canvas } from '@react-three/fiber';
 import { CameraControls, GizmoHelper, GizmoViewcube, Loader } from '@react-three/drei';
 import { SYSTEMS } from './config.js';
-import { inferSystem, applyLayers, applyHighlights, allMeshes, boxOf } from './registry.js';
+import { inferSystem, applyLayers, applyHighlights, allMeshes, boxOf, alignAnatomy } from './registry.js';
 import { predictHealth, fetchTimeline, timelineAt, PATHOGENS } from './api.js';
 import { Models, AutoFit, Animator, Labels } from './components/Scene.jsx';
 import { LayersPanel, LifestylePanel, InfoPanel, SearchBox, Toolbar, CreditsModal, BodyShapePanel, InfectionPanel } from './components/Panels.jsx';
@@ -117,6 +117,14 @@ export default function BodyViewer({ modelsBase = '/' }) {
   );
   const shownHealth = infNow ? infNow.organs : health.data;
 
+  // 3c. Fix parts that the Blender export put in the wrong place (brain into skull, skin around skeleton).
+  useEffect(() => {
+    if (alignAnatomy()) {
+      bump();
+      setTimeout(() => resetViewRef.current?.(), 0); // re-frame the camera on the fixed body
+    }
+  }, [version]);
+
   // 4. Push state into the 3D materials.
   useEffect(() => applyLayers(layers), [layers, version]);
   useEffect(
@@ -141,6 +149,7 @@ export default function BodyViewer({ modelsBase = '/' }) {
     c.fitToBox(box, true, { paddingTop: p, paddingBottom: p, paddingLeft: p, paddingRight: p });
   };
 
+  const resetViewRef = useRef();
   const resetView = () => {
     const c = controlsRef.current;
     const box = boxOf(allMeshes());
@@ -149,6 +158,8 @@ export default function BodyViewer({ modelsBase = '/' }) {
     c.setLookAt(0, 0, 1, 0, 0, 0, false);
     c.fitToBox(box, true, { paddingTop: p, paddingBottom: p, paddingLeft: p, paddingRight: p });
   };
+
+  resetViewRef.current = resetView;
 
   const onFound = (mesh) => {
     const sys = mesh.userData.gt.system;
