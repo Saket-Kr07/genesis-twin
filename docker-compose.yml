@@ -1,5 +1,4 @@
-# Run everything:  docker compose up --build
-# Frontend http://localhost:5173 | API http://localhost:8000/docs
+
 services:
   db:
     image: postgres:16-alpine
@@ -57,12 +56,21 @@ services:
   frontend:
     build:
       context: ./frontend/pages
+      dockerfile: ../Dockerfile
       args:
         VITE_API_URL: http://localhost:8000
+        VITE_VIEWER_URL: http://localhost:5174
     ports:
       - "5173:80"
     depends_on:
       - backend
+
+  viewer:
+    build:
+      context: ./frontend/viewer
+      dockerfile: Dockerfile
+    ports:
+      - "5174:5174"
 
 volumes:
   pgdata:

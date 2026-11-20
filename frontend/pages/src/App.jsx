@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Intro from "./Intro.jsx";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:8000";
 const VIEWER = import.meta.env.VITE_VIEWER_URL || ""; // optional: URL of Rudraksh's viewer
@@ -353,12 +354,15 @@ export default function App() {
   const [page, setPage] = useState("landing");
   const [token, setToken] = useState(() => { try { return localStorage.getItem("gt_token") || ""; } catch { return ""; } });
   const [me, setMe] = useState(null);
-  const save = (t) => { setToken(t); try { t ? localStorage.setItem("gt_token", t) : localStorage.removeItem("gt_token"); } catch {} };
+  const [intro, setIntro] = useState(true); // cinematic opening, shown on every visit
+  const save =(t) => { setToken(t); try { t ? localStorage.setItem("gt_token", t) : localStorage.removeItem("gt_token"); } catch {} };
   const refresh = () => token ? call("/auth/me", { token }).then(setMe).catch(() => { save(""); setMe(null); }) : setMe(null);
   useEffect(() => { refresh(); }, [token]);
   const nav = [["landing", "Overview"], ["explorer", "Body explorer"], ["lab", "Pathogen lab"], ["research", "Evidence"], ["dashboard", "Workspace"], ["pricing", "Plans"], ["admin", "Governance"]];
   const title = (nav.find((n) => n[0] === page) || [0, "Account"])[1];
   return (
+    <>
+    {intro && <Intro onDone={() => setIntro(false)} />}
     <div className="shell">
       <aside className="side">
         <div className="brand"><span className="logo" />Genesis Twin<small>Research platform</small></div>
@@ -386,5 +390,6 @@ export default function App() {
         <footer className="disc">Simulation for research and education. Not medical advice. Vitals are model outputs, not measurements.</footer>
       </div>
     </div>
+    </>
   );
 }
